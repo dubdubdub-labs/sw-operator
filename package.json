@@ -1,0 +1,28 @@
+{
+  "name": "camono",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "lint:fix": "turbo lint:fix",
+    "lint:fix:unsafe": "turbo lint:fix:unsafe",
+    "typecheck": "turbo typecheck"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.1.4",
+    "lefthook": "^1.12.2",
+    "turbo": "^2.5.5",
+    "typescript": "5.8.2",
+    "ultracite": "5.1.2"
+  },
+  "packageManager": "bun@1.2.19",
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
+}

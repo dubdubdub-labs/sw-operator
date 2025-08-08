@@ -1,0 +1,10 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.1.4/schema.json",
+  "extends": ["ultracite"],
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double",
+      "jsxQuoteStyle": "double"
+    }
+  }
+}
