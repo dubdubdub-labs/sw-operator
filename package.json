@@ -8,11 +8,14 @@
     "lint": "turbo lint",
     "lint:fix": "turbo lint:fix",
     "lint:fix:unsafe": "turbo lint:fix:unsafe",
-    "typecheck": "turbo typecheck"
+    "typecheck": "turbo typecheck",
+    "sync:agents": "bun scripts/sync-agents-claude.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.4",
+    "ignore": "7.0.5",
     "lefthook": "1.12.2",
+    "postcss-load-config": "6.0.1",
     "turbo": "2.5.5",
     "typescript": "5.8.2",
     "ultracite": "5.1.2"
@@ -21,8 +24,23 @@
   "engines": {
     "node": ">=20"
   },
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ]
+  "workspaces": {
+    "packages": [
+      "apps/*",
+      "packages/*"
+    ],
+    "catalog": {
+      "react": "19.1.0",
+      "react-dom": "19.1.0",
+      "@types/react": "19.1.9",
+      "@types/react-dom": "19.1.7",
+      "@types/node": "^22"
+    },
+    "catalogs": {
+      "testing": {}
+    }
+  },
+  "dependencies": {
+    "@types/bun": "^1.2.19"
+  }
 }

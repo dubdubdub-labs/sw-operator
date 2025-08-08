@@ -25,6 +25,9 @@
       },
       "nursery": {
         "noUnknownAtRule": "off"
+      },
+      "suspicious": {
+        "noConsole": "off"
       }
     }
   }

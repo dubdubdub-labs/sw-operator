@@ -1,28 +1,24 @@
 {
-  "name": "web",
-  "version": "0.1.0",
+  "name": "@repo/hooks",
+  "version": "0.0.0",
+  "type": "module",
   "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
     "lint": "biome check .",
     "lint:fix": "biome check . --write",
     "lint:fix:unsafe": "biome check . --unsafe --write",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@repo/ui": "workspace:*",
     "react": "catalog:",
-    "react-dom": "catalog:",
-    "next": "15.4.6"
+    "react-dom": "catalog:"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "@types/node": "catalog:",
     "@types/react": "catalog:",
-    "@types/react-dom": "catalog:",
-    "@tailwindcss/postcss": "4.1.11",
-    "tailwindcss": "4.1.11"
+    "@types/react-dom": "catalog:"
   }
 }

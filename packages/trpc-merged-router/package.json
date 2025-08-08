@@ -1,0 +1,26 @@
+{
+  "name": "@repo/trpc-merged-router",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "biome check .",
+    "lint:fix": "biome check . --write",
+    "lint:fix:unsafe": "biome check . --unsafe --write",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@repo/trpc-core": "workspace:*",
+    "@repo/trpc-router": "workspace:*",
+    "@tanstack/query-core": "5.83.1",
+    "@trpc/client": "11.4.4",
+    "@trpc/tanstack-react-query": "11.4.4"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/react": "catalog:"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "@repo/db-core",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    "./": "./src/index.ts",
+    "./schema": "./src/instant.schema.ts",
+    "./perms": "./src/instant.perms.ts"
+  },
+  "scripts": {
+    "db:push-schema": "instant-cli push schema",
+    "db:push-perms": "instant-cli push perms",
+    "lint": "biome check .",
+    "lint:fix": "biome check . --write",
+    "lint:fix:unsafe": "biome check . --unsafe --write",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@instantdb/core": "0.20.21"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "instant-cli": "0.20.21"
+  }
+}

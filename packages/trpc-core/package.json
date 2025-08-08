@@ -1,0 +1,22 @@
+{
+  "name": "@repo/trpc-core",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "biome check .",
+    "lint:fix": "biome check . --write",
+    "lint:fix:unsafe": "biome check . --unsafe --write",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@trpc/server": "11.4.4",
+    "superjson": "2.2.2"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*"
+  }
+}
