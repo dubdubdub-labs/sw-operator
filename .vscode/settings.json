@@ -31,5 +31,8 @@
   },
   "[graphql]": {
     "editor.defaultFormatter": "biomejs.biome"
+  },
+  "files.associations": {
+    "bun.lock": "plaintext"
   }
 }

@@ -1,17 +1,16 @@
 # Project Context
 
 ## Linting and Typechecking
-Ultracite, a preset for Biome's lightning fast formatter and linter, enforces strict type safety, accessibility standards, and consistent code quality for TypeScript projects.
+We use Ultracite, a preset for Biome's lightning fast formatter and linter, which enforces strict type safety, accessibility standards, and consistent code quality for TypeScript projects.
 
-## Before Writing Code
+### Before Writing Code
 1. Analyze existing patterns in the codebase
 2. Consider edge cases and error scenarios
 3. Follow the rules below strictly
-4. Validate accessibility requirements
 
-## Rules
+### Biome / Ultracite Linting Rules
 
-### Accessibility (a11y)
+#### Accessibility (a11y)
 - Make sure label elements have text content and are associated with an input.
 - Give all elements requiring alt text meaningful information for screen readers.
 - Always include a `type` attribute for button elements.
@@ -19,7 +18,7 @@ Ultracite, a preset for Biome's lightning fast formatter and linter, enforces st
 - Accompany `onMouseOver`/`onMouseOut` with `onFocus`/`onBlur`.
 - Use semantic elements instead of role attributes in JSX.
 
-### Code Complexity and Quality
+#### Code Complexity and Quality
 - Don't use any or unknown as type constraints.
 - Don't use primitive type aliases or misleading types.
 - Don't use empty type parameters in type aliases and interfaces.
@@ -42,7 +41,7 @@ Ultracite, a preset for Biome's lightning fast formatter and linter, enforces st
 - Don't declare functions and vars that are accessible outside their block.
 - Don't use variables and function parameters before they're declared.
 
-### React and JSX Best Practices
+#### React and JSX Best Practices
 - Don't use the return value of React.render.
 - Make sure all dependencies are correctly specified in React hooks.
 - Make sure all React hooks are called from the top level of component functions.
@@ -56,7 +55,7 @@ Ultracite, a preset for Biome's lightning fast formatter and linter, enforces st
 - Use `<>...</>` instead of `<Fragment>...</Fragment>`.
 - Watch out for possible "wrong" semicolons inside JSX elements.
 
-### Correctness and Safety
+#### Correctness and Safety
 - Don't write unreachable code.
 - Don't use optional chaining where undefined values aren't allowed.
 - Don't have unused function parameters.
@@ -84,7 +83,7 @@ Ultracite, a preset for Biome's lightning fast formatter and linter, enforces st
 - Don't use namespace imports.
 - Declare regex literals at the top level.
 
-### TypeScript Best Practices
+#### TypeScript Best Practices
 - Don't use TypeScript enums.
 - Don't export imported variables.
 - Don't use TypeScript namespaces.
@@ -103,7 +102,7 @@ Ultracite, a preset for Biome's lightning fast formatter and linter, enforces st
 - Don't misuse the non-null assertion operator (!) in TypeScript files.
 - Don't use implicit any type on variable declarations.
 
-### Style and Consistency
+#### Style and Consistency
 - Don't use callbacks in asynchronous tests and hooks.
 - Don't use negation in `if` statements that have `else` clauses.
 - Don't use nested ternary expressions.
@@ -143,11 +142,11 @@ Ultracite, a preset for Biome's lightning fast formatter and linter, enforces st
 - Make sure async functions actually use await.
 - Make sure default clauses in switch statements come last.
 
-### Next.js Specific Rules
+#### Next.js Specific Rules
 - Don't use `<img>` elements in Next.js projects.
 - Don't use `<head>` elements in Next.js projects.
 
-### Testing Best Practices
+#### Testing Best Practices
 - Don't use export or module.exports in test files.
 - Don't use focused tests.
 - Make sure the assertion function, like expect, is placed inside an it() function call.

@@ -12,8 +12,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.4",
-    "lefthook": "^1.12.2",
-    "turbo": "^2.5.5",
+    "lefthook": "1.12.2",
+    "turbo": "2.5.5",
     "typescript": "5.8.2",
     "ultracite": "5.1.2"
   },

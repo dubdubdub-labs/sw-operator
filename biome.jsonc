@@ -1,10 +1,31 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.1.4/schema.json",
   "extends": ["ultracite"],
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
   "javascript": {
     "formatter": {
       "quoteStyle": "double",
       "jsxQuoteStyle": "double"
+    }
+  },
+  "linter": {
+    "includes": ["**", "!bun.lock"],
+    "rules": {
+      "a11y": {
+        "useSemanticElements": "off",
+        "useAriaPropsForRole": "off",
+        "useFocusableInteractive": "off"
+      },
+      "correctness": {
+        "noInvalidPositionAtImportRule": "off"
+      },
+      "nursery": {
+        "noUnknownAtRule": "off"
+      }
     }
   }
 }
