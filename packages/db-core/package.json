@@ -6,7 +6,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./schema": "./src/instant.schema.ts",
-    "./perms": "./src/instant.perms.ts"
+    "./perms": "./src/instant.perms.ts",
+    "./utils": "./src/utils.ts"
   },
   "scripts": {
     "db:push-schema": "instant-cli push schema",
@@ -17,7 +18,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@instantdb/core": "catalog:"
+    "@instantdb/core": "catalog:",
+    "zod": "^4.0.16"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

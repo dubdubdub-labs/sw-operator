@@ -20,6 +20,7 @@
       "name": "web",
       "version": "0.1.0",
       "dependencies": {
+        "@repo/hooks": "workspace:*",
         "@repo/ui": "workspace:*",
         "next": "15.4.6",
         "react": "catalog:",
@@ -64,6 +65,7 @@
       "version": "0.0.0",
       "dependencies": {
         "@instantdb/core": "catalog:",
+        "zod": "^4.0.16",
       },
       "devDependencies": {
         "@repo/typescript-config": "workspace:*",
@@ -74,6 +76,8 @@
       "name": "@repo/hooks",
       "version": "0.0.0",
       "dependencies": {
+        "@repo/db-client": "workspace:*",
+        "@repo/trpc-app": "workspace:*",
         "react": "catalog:",
         "react-dom": "catalog:",
       },
