@@ -1,2 +1,2 @@
-export * from "./app-router";
+export * from "./router";
 export * from "./trpc-context";

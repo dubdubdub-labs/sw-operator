@@ -1,5 +1,5 @@
 {
-  "name": "@repo/trpc-merged-router",
+  "name": "@repo/trpc-app",
   "version": "0.0.0",
   "type": "module",
   "private": true,
@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@repo/trpc-core": "workspace:*",
-    "@repo/trpc-router": "workspace:*",
+    "@repo/trpc-router-basic": "workspace:*",
     "@tanstack/query-core": "5.83.1",
     "@trpc/client": "11.4.4",
     "@trpc/tanstack-react-query": "11.4.4"

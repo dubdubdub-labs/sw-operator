@@ -13,8 +13,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@instantdb/react": "0.20.21",
-    "@instantdb/react-native": "0.20.21",
+    "@instantdb/core": "catalog:",
+    "@instantdb/react": "catalog:",
+    "@instantdb/react-native": "catalog:",
     "@repo/db-core": "workspace:*",
     "@sentry/react": "10.3.0"
   },

@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "exports": {
-    "./": "./src/index.ts",
+    ".": "./src/index.ts",
     "./schema": "./src/instant.schema.ts",
     "./perms": "./src/instant.perms.ts"
   },
@@ -17,10 +17,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@instantdb/core": "0.20.21"
+    "@instantdb/core": "catalog:"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "instant-cli": "0.20.21"
+    "instant-cli": "catalog:"
   }
 }

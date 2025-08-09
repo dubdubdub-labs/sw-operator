@@ -13,7 +13,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@instantdb/admin": "0.20.21",
+    "@instantdb/admin": "catalog:",
     "@repo/db-core": "workspace:*"
   },
   "devDependencies": {

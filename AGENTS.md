@@ -1,7 +1,10 @@
 # Project Context
 
+## Project Structure
+
 ## Rules and Regulations
 - Use bun (and bunx), do not use npm/pnpm/yarn unless absolutely necessary.
+-
 
 ## Linting and Typechecking
 We use Ultracite, a preset for Biome's lightning fast formatter and linter, which enforces strict type safety, accessibility standards, and consistent code quality for TypeScript projects.

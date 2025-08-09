@@ -1,5 +1,5 @@
 import { t } from "@repo/trpc-core";
-import { trpcRouter as helloRouter } from "@repo/trpc-router";
+import { trpcRouter as helloRouter } from "../../trpc-router-basic/src";
 
 export const appRouter = t.router({
   hello: helloRouter,
