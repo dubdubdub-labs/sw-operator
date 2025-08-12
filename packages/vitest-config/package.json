@@ -1,0 +1,12 @@
+{
+  "name": "@repo/vitest-config",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    ".": "./vitest.config.base.ts"
+  },
+  "devDependencies": {
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.2.4"
+  }
+}

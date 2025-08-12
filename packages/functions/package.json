@@ -1,0 +1,26 @@
+{
+  "name": "@repo/functions",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "biome check .",
+    "lint:fix": "biome check . --write",
+    "lint:fix:unsafe": "biome check . --unsafe --write",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@repo/db-client": "workspace:*",
+    "@repo/trpc-app": "workspace:*",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:"
+  }
+}
