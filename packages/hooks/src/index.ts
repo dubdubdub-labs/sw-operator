@@ -1,13 +1,5 @@
-import { db } from "@repo/db-client";
-
-export const use$Users = () => {
-  const { data, error } = db.useRegisteredQuery(
-    db.registeredQueries.users.getAll,
-    {}
-  );
-
-  return {
-    users: data,
-    error,
-  };
-};
+export { useCurrentNamespace } from "./use-current-namespace";
+export { useRegisteredMutations } from "./use-registered-mutations";
+export { useRegisteredQueries } from "./use-registered-queries";
+export { useSchemaQuery } from "./use-schema-query";
+export { use$Users } from "./use-users";
