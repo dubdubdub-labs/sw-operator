@@ -12,11 +12,19 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@ai-sdk/react": "^2.0.10",
+    "@repo/db-client": "workspace:*",
     "@repo/hooks": "workspace:*",
     "@repo/ui": "workspace:*",
+    "ag-grid-enterprise": "^34.1.1",
+    "ag-grid-react": "^34.1.1",
+    "ai": "^5.0.10",
+    "lucide-react": "^0.539.0",
+    "next": "15.4.6",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "next": "15.4.6"
+    "sonner": "^2.0.7",
+    "zod": "^4.0.17"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
