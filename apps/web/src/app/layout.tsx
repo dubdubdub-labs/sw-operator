@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@repo/ui/globals.css";
+import { Toaster } from "@repo/ui/components/sonner";
+import { AppSidebar } from "@/components/app-sidebar";
+import { Providers } from "@/providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,11 +26,26 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html className="h-full overscroll-none" lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} h-full overscroll-none antialiased`}
       >
-        {children}
+        <Providers>
+          <AppSidebar />
+          <main className="h-screen flex-1 overflow-hidden">{children}</main>
+          <Toaster
+            expand={false}
+            offset={{
+              bottom: 10,
+              right: 10,
+            }}
+            toastOptions={{
+              classNames: {
+                toast: "!shadow-none !rounded-2xl !p-3 !pl-4",
+              },
+            }}
+          />
+        </Providers>
       </body>
     </html>
   );
