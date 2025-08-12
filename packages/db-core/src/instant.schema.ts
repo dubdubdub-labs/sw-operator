@@ -4,6 +4,7 @@ import { i } from "@instantdb/core";
 
 const _schema = i.schema({
   entities: {
+    "🚀cam": i.entity({}),
     $files: i.entity({
       path: i.string().unique().indexed(),
       url: i.string(),
@@ -11,12 +12,15 @@ const _schema = i.schema({
     $users: i.entity({
       email: i.string().unique().indexed().optional(),
     }),
+    todos: i.entity({
+      "supppppeerr long attrrrrr": i.string().unique().indexed(),
+    }),
   },
   links: {},
   rooms: {},
 });
 
-// this helps TypeScript display nicer intellisense
+// This helps Typescript display nicer intellisense
 type _AppSchema = typeof _schema;
 interface AppSchema extends _AppSchema {}
 const schema: AppSchema = _schema;

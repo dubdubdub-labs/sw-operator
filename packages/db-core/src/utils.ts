@@ -1,6 +1,21 @@
-import type { Exactly, InstaQLParams } from "@instantdb/core";
+import type {
+  Exactly,
+  InstantCoreDatabase,
+  InstaQLParams,
+  TransactionChunk,
+} from "@instantdb/core";
 import type { z } from "zod";
 import type { AppSchema } from "./instant.schema";
+
+export type DBCore = Omit<
+  InstantCoreDatabase<AppSchema, true>,
+  | "_reactor"
+  | "subscribeQuery"
+  | "subscribeAuth"
+  | "subscribeConnectionStatus"
+  | "joinRoom"
+  | "shutdown"
+>;
 
 // Stricter query handler that enforces exact InstantDB query shape
 export type QueryHandler<
@@ -29,28 +44,36 @@ export type QuerySetItem =
   // biome-ignore lint/suspicious/noExplicitAny: helper type
   RegisteredQuery<any, any> | { [key: string]: QuerySetItem };
 
-// Helper function to recursively assign names to queries based on their path
-function assignQueryNames(
-  obj: Record<string, QuerySetItem>,
-  prefix = ""
-): Record<string, QuerySetItem> {
-  const result: Record<string, QuerySetItem> = {};
+// Type for a mutation or a nested group of mutations
+export type MutationSetItem =
+  // biome-ignore lint/suspicious/noExplicitAny: helper type
+  RegisteredMutation<any> | { [key: string]: MutationSetItem };
+
+// Generic helper function to recursively assign names based on their path
+function assignNames<T extends QuerySetItem | MutationSetItem>(
+  obj: Record<string, T>,
+  prefix = "",
+  defaultName = "unnamed"
+): Record<string, T> {
+  const result: Record<string, T> = {};
 
   for (const [key, value] of Object.entries(obj)) {
     const fullName = prefix ? `${prefix}.${key}` : key;
 
-    if ("queryOptions" in value && "handler" in value) {
-      // It's a query, assign the name if not already set
+    if ("handler" in value && typeof value.handler === "function") {
+      // It's a query or mutation, assign the name if not already set
       result[key] = {
         ...value,
-        name: value.name === "unnamed_query" ? fullName : value.name,
-      } as QuerySetItem;
+        name: value.name === defaultName ? fullName : value.name,
+      } as T;
     } else {
       // It's a nested object, recurse
-      result[key] = assignQueryNames(
-        value as Record<string, QuerySetItem>,
-        fullName
-      );
+      result[key] = assignNames(
+        // biome-ignore lint/suspicious/noExplicitAny: helper type
+        value as any,
+        fullName,
+        defaultName
+      ) as T;
     }
   }
 
@@ -60,7 +83,13 @@ function assignQueryNames(
 export function querySet<T extends Record<string, QuerySetItem>>(
   internalQuerySet: T
 ): T {
-  return assignQueryNames(internalQuerySet) as T;
+  return assignNames(internalQuerySet, "", "unnamed_query") as T;
+}
+
+export function mutationSet<T extends Record<string, MutationSetItem>>(
+  internalMutationSet: T
+): T {
+  return assignNames(internalMutationSet, "", "unnamed_mutation") as T;
 }
 
 export function query<
@@ -78,6 +107,39 @@ export function query<
     queryOptions: (args: z.infer<TArgs>) => {
       const validatedArgs = definition.args.parse(args);
       return definition.handler(validatedArgs) satisfies TQuery;
+    },
+  };
+}
+
+export type MutationHandler<TArgs extends z.ZodTypeAny> = (
+  args: z.infer<TArgs>
+) => TransactionChunk<AppSchema, keyof AppSchema["entities"]>[];
+
+interface MutationDefinition<TArgs extends z.ZodTypeAny> {
+  args: TArgs;
+  handler: MutationHandler<TArgs>;
+}
+
+export interface RegisteredMutation<TArgs extends z.ZodTypeAny>
+  extends MutationDefinition<TArgs> {
+  name: string;
+  mutationOptions: (
+    args: z.infer<TArgs>
+  ) => TransactionChunk<AppSchema, keyof AppSchema["entities"]>[];
+}
+
+export function mutation<TArgs extends z.ZodTypeAny>(definition: {
+  args: TArgs;
+  handler: MutationHandler<TArgs>;
+  name?: string;
+}): RegisteredMutation<TArgs> {
+  return {
+    ...definition,
+    name: definition.name || "unnamed_mutation",
+    handler: definition.handler satisfies MutationDefinition<TArgs>["handler"],
+    mutationOptions: (args: z.infer<TArgs>) => {
+      const validatedArgs = definition.args.parse(args);
+      return definition.handler(validatedArgs);
     },
   };
 }
