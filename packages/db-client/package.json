@@ -4,7 +4,9 @@
   "type": "module",
   "private": true,
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./dangerous-unsafe-client": "./src/dangerous-unsafe-client.ts",
+    "./utils": "./src/utils.ts"
   },
   "scripts": {
     "lint": "biome check .",
@@ -17,9 +19,11 @@
     "@instantdb/react": "catalog:",
     "@instantdb/react-native": "catalog:",
     "@repo/db-core": "workspace:*",
-    "@sentry/react": "10.3.0"
+    "@sentry/react": "10.3.0",
+    "react": "catalog:"
   },
   "devDependencies": {
-    "@repo/typescript-config": "workspace:*"
+    "@repo/typescript-config": "workspace:*",
+    "@types/react": "catalog:"
   }
 }

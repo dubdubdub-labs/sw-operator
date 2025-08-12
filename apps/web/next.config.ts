@@ -31,6 +31,7 @@ const nextConfig: NextConfig = {
    * we prefer to use our monorepo's lockfile over the external one
    */
   outputFileTracingRoot: path.resolve(__dirname, "../.."),
+  productionBrowserSourceMaps: true,
 };
 
 export default nextConfig;
