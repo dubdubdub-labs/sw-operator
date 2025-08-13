@@ -1,0 +1,30 @@
+{
+  "name": "@repo/chat-base-root-layout",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./src/index.tsx"
+  },
+  "scripts": {
+    "lint": "biome check .",
+    "lint:fix": "biome check . --write",
+    "lint:fix:unsafe": "biome check . --unsafe --write",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@repo/root-layout": "workspace:*"
+  },
+  "peerDependencies": {
+    "@repo/ui": "workspace:*",
+    "next": "15.4.6",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "tailwindcss": "4.1.11"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:"
+  }
+}

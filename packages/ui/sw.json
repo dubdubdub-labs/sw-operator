@@ -1,0 +1,28 @@
+{
+  "type": "package",
+  "slug": "ui",
+  "name": "UI Component Library",
+  "description": "Comprehensive React UI component library with AI-powered elements, form components, and data visualization. Built with Radix UI primitives, Tailwind CSS, and includes hooks for state management. Features accessible, customizable components with TypeScript support.",
+  "tags": [
+    "react",
+    "ui-components",
+    "design-system",
+    "tailwind",
+    "radix-ui",
+    "typescript",
+    "ai-components",
+    "accessibility",
+    "form-components",
+    "data-visualization",
+    "production"
+  ],
+  "view": [
+    { "path": "README.md", "lines": "all" },
+    { "tree": { "path": "src", "depth": 3, "limit": 100 } },
+    { "path": "src/components/index.tsx", "lines": "all" },
+    { "path": "src/components/ai-elements/index.tsx", "lines": "all" },
+    { "path": "src/hooks/index.ts", "lines": "all" },
+    { "path": "src/lib/utils.ts", "lines": "all" },
+    { "path": "package.json", "lines": "all" }
+  ]
+}
