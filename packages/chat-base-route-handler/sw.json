@@ -1,0 +1,24 @@
+{
+  "type": "package",
+  "slug": "chat-base-route-handler",
+  "name": "Chat Base Route Handler",
+  "description": "API route handler for streaming chat responses with database persistence. Integrates with AI SDK for streaming text generation using GPT-5-mini and automatically saves chat sessions, messages, and file attachments to database. Provides a complete chat backend solution with message history and conversation management.",
+  "tags": [
+    "api",
+    "routes",
+    "chat",
+    "streaming",
+    "ai",
+    "typescript",
+    "nextjs",
+    "database",
+    "gpt",
+    "messages"
+  ],
+  "view": [
+    { "tree": { "path": ".", "depth": 2, "limit": 20 } },
+    { "path": "package.json", "lines": "all" },
+    { "path": "src/index.ts", "lines": "all" },
+    { "path": "src/route-handler.ts", "lines": "all" }
+  ]
+}

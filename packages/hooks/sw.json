@@ -1,0 +1,26 @@
+{
+  "type": "package",
+  "slug": "react-db-hooks",
+  "name": "Database React Hooks",
+  "description": "TypeScript React hooks for database operations and schema management. Provides hooks for namespace exploration, user management, registered queries/mutations, and schema introspection. Built for InstantDB with tRPC integration and designed for database admin interfaces.",
+  "tags": [
+    "react",
+    "hooks",
+    "typescript",
+    "database",
+    "instantdb",
+    "trpc",
+    "schema",
+    "admin",
+    "utilities"
+  ],
+  "view": [
+    { "tree": { "path": "src", "depth": 2, "limit": 20 } },
+    { "path": "src/index.ts", "lines": "all" },
+    { "path": "src/use-current-namespace.ts", "lines": "all" },
+    { "path": "src/use-schema-query.ts", "lines": "all" },
+    { "path": "src/use-users.ts", "lines": "all" },
+    { "path": "src/use-registered-queries.ts", "lines": [1, 30] },
+    { "path": "package.json", "lines": [1, 30] }
+  ]
+}

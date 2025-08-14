@@ -1,0 +1,23 @@
+{
+  "type": "package",
+  "slug": "chat-base-root-layout",
+  "name": "Chat Base Root Layout",
+  "description": "Specialized root layout component for chat applications with Google Geist font integration. Extends the base root layout package with chat-optimized typography using Geist Sans and Geist Mono fonts. Built with React, TypeScript, and Next.js for seamless integration into chat interfaces.",
+  "tags": [
+    "react",
+    "typescript",
+    "nextjs",
+    "layout",
+    "chat",
+    "fonts",
+    "geist",
+    "tailwindcss",
+    "ui-component"
+  ],
+  "view": [
+    { "path": "package.json", "lines": "all" },
+    { "tree": { "path": ".", "depth": 2, "limit": 20 } },
+    { "path": "src/index.tsx", "lines": "all" },
+    { "path": "tsconfig.json", "lines": "all" }
+  ]
+}

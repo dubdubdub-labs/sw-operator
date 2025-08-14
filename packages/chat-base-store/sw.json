@@ -1,0 +1,21 @@
+{
+  "type": "package",
+  "slug": "chat-base-store",
+  "name": "Chat Base Store",
+  "description": "Zustand-based state management package for chat applications providing centralized stores for model selection and chat-related state. Features TypeScript support, reactive updates, and modular store architecture designed for real-time chat interfaces. Integrates seamlessly with other chat-base packages for consistent state management across chat features.",
+  "tags": [
+    "state-management",
+    "chat",
+    "zustand",
+    "typescript",
+    "reactive",
+    "models",
+    "real-time"
+  ],
+  "view": [
+    { "tree": { "path": "src", "depth": 2, "limit": 20 } },
+    { "path": "package.json", "lines": "all" },
+    { "path": "src/index.ts", "lines": "all" },
+    { "path": "src/selected-models-store.ts", "lines": "all" }
+  ]
+}

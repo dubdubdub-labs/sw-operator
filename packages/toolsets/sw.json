@@ -1,0 +1,23 @@
+{
+  "type": "package",
+  "slug": "toolsets",
+  "name": "Development Toolsets",
+  "description": "Development toolsets and utilities package providing AI integration tools and data validation helpers. Built with Zod for schema validation and AI library integration for modern development workflows. Designed as a foundational package for extending development capabilities across the monorepo.",
+  "tags": [
+    "tooling",
+    "development",
+    "utilities",
+    "typescript",
+    "ai",
+    "zod",
+    "validation",
+    "dev-tools",
+    "foundational"
+  ],
+  "view": [
+    { "path": "package.json", "lines": "all" },
+    { "tree": { "path": "src", "depth": 2, "limit": 20 } },
+    { "path": "src/index.ts", "lines": "all" },
+    { "path": "tsconfig.json", "lines": "all" }
+  ]
+}

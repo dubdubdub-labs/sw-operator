@@ -1,0 +1,23 @@
+{
+  "type": "package",
+  "slug": "chat-base-sidebar",
+  "name": "Chat Base Sidebar",
+  "description": "Configurable sidebar component designed for chat interfaces with grouped navigation items, icon support, and flexible item types. Supports both link navigation and interactive buttons with active states. Built on top of @repo/ui components with TypeScript and Next.js integration.",
+  "tags": [
+    "react",
+    "sidebar",
+    "chat",
+    "ui",
+    "typescript",
+    "nextjs",
+    "navigation",
+    "components",
+    "lucide-react"
+  ],
+  "view": [
+    { "path": "package.json", "lines": "all" },
+    { "tree": { "path": "src", "depth": 2, "limit": 20 } },
+    { "path": "src/index.tsx", "lines": "all" },
+    { "path": "tsconfig.json", "lines": "all" }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "type": "package",
+  "slug": "chat-base-db",
+  "name": "Chat Database Layer",
+  "description": "Type-safe database layer for chat applications built on InstantDB with real-time subscriptions and admin capabilities. Provides complete schema for messages, users, files, and chat rooms with relationships, plus separate client/server configurations. Features structured message parts support for rich content including files and media.",
+  "tags": [
+    "database",
+    "chat",
+    "instantdb",
+    "typescript",
+    "real-time",
+    "schema",
+    "messages",
+    "users",
+    "files"
+  ],
+  "view": [
+    { "tree": { "path": "src", "depth": 3, "limit": 50 } },
+    { "path": "package.json", "lines": "all" },
+    { "path": "src/index.ts", "lines": "all" },
+    { "path": "src/instant.schema.ts", "lines": "all" },
+    { "path": "src/client/index.ts", "lines": "all" },
+    { "path": "src/server/index.ts", "lines": "all" },
+    { "path": "src/types/index.ts", "lines": "all" }
+  ]
+}

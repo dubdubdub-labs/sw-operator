@@ -1,0 +1,22 @@
+{
+  "type": "package",
+  "slug": "chat-base-hooks",
+  "name": "Chat Base Hooks",
+  "description": "React hooks package for chat functionality with real-time database integration and AI SDK compatibility. Provides hooks for managing chats, messages, and message parts with CRUD operations, optimistic updates, and TypeScript support. Integrates seamlessly with AI SDK's UIMessage format for chat interfaces.",
+  "tags": [
+    "react",
+    "hooks",
+    "chat",
+    "typescript",
+    "ai-sdk",
+    "database",
+    "realtime",
+    "messaging"
+  ],
+  "view": [
+    { "tree": { "path": "src", "depth": 2, "limit": 20 } },
+    { "path": "package.json", "lines": "all" },
+    { "path": "src/index.ts", "lines": "all" },
+    { "path": "src/use-chats.ts", "lines": "all" }
+  ]
+}

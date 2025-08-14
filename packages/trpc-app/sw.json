@@ -1,0 +1,24 @@
+{
+  "type": "package",
+  "slug": "trpc-app",
+  "name": "tRPC Application Setup",
+  "description": "Complete tRPC application package that combines core tRPC setup with router composition and React Query integration. Provides ready-to-use app router with modular router composition and React context providers for seamless client-side usage. Built with TypeScript and includes full type safety across the API boundary.",
+  "tags": [
+    "trpc",
+    "typescript",
+    "api",
+    "application",
+    "react-query",
+    "tanstack",
+    "router",
+    "type-safe",
+    "fullstack"
+  ],
+  "view": [
+    { "tree": { "path": "src", "depth": 2, "limit": 20 } },
+    { "path": "src/index.ts", "lines": "all" },
+    { "path": "src/router.ts", "lines": "all" },
+    { "path": "src/trpc-context.ts", "lines": "all" },
+    { "path": "package.json", "lines": "all" }
+  ]
+}
