@@ -3,7 +3,7 @@ import {
   checkIsIndexedAttr,
   checkIsRequiredAttr,
   checkIsUniqAttr,
-} from "@repo/db-client/utils";
+} from "@repo/sw-instantdb";
 import type { CustomHeaderProps } from "ag-grid-react";
 import { AsteriskIcon, SearchIcon, SignatureIcon } from "lucide-react";
 import type { EntityPageColDefContext } from "./entity-page-contexts";

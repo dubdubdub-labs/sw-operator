@@ -1,7 +1,10 @@
+import { forSchema } from "@repo/sw-instantdb";
 import { z } from "zod";
-import { query, querySet } from "./utils";
+import type { AppSchema } from "./instant.schema";
 
-// Example queries demonstrating usage
+// Bind once: all queries below are checked against AppSchema
+const { query, querySet } = forSchema<AppSchema>();
+
 export const getUserById = query({
   args: z.object({
     userId: z.uuid(),
@@ -9,9 +12,7 @@ export const getUserById = query({
   handler: ({ userId }) => ({
     $users: {
       $: {
-        where: {
-          id: userId,
-        },
+        where: { id: userId },
       },
     },
   }),
@@ -24,9 +25,7 @@ export const getUserByEmail = query({
   handler: ({ email }) => ({
     $users: {
       $: {
-        where: {
-          email,
-        },
+        where: { email },
       },
     },
   }),
@@ -41,9 +40,7 @@ export const getFilesByPath = query({
     $files: {
       $: {
         where: {
-          path: {
-            $like: `${pathPrefix}%`,
-          },
+          path: { $like: `${pathPrefix}%` },
         },
         limit,
       },
@@ -56,17 +53,14 @@ export const getAllUsers = query({
     limit: z.number().int().positive().optional(),
     offset: z.number().int().nonnegative().optional(),
   }),
-  handler: () => {
-    return {
-      $users: {
-        $: {
-          where: {
-            id: "123",
-          },
-        },
+  handler: ({ limit, offset }) => ({
+    $users: {
+      $: {
+        ...(limit ? { limit } : {}),
+        ...(offset ? { offset } : {}),
       },
-    };
-  },
+    },
+  }),
 });
 
 // Registry of all queries for easy access

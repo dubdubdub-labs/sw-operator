@@ -4,6 +4,7 @@ import {
   init,
   withScope,
 } from "@sentry/react";
+import { getEnvVar } from "./utils";
 
 let sentryInitialized = false;
 
@@ -12,14 +13,7 @@ export const initSentry = () => {
     return;
   }
 
-  const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
-
-  if (!dsn) {
-    console.warn(
-      "NEXT_PUBLIC_SENTRY_DSN not set - Sentry error logging disabled"
-    );
-    return;
-  }
+  const dsn = getEnvVar("NEXT_PUBLIC_SENTRY_DSN");
 
   init({
     dsn,

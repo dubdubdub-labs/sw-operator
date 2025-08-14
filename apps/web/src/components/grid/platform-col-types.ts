@@ -1,4 +1,4 @@
-import { db } from "@repo/db-client";
+import { db } from "@repo/db-core/client";
 import type { ColTypeDef } from "ag-grid-enterprise";
 import { DefaultCellEditor } from "./default-cell-editor";
 import { DefaultCellRenderer, IdCellRenderer } from "./default-cell-renderer";

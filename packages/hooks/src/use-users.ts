@@ -1,4 +1,4 @@
-import { db } from "@repo/db-client";
+import { db } from "@repo/db-core/client";
 
 export const use$Users = () => {
   const { data, error } = db.useRegisteredQuery(

@@ -1,4 +1,4 @@
-import type { SchemaAttr } from "@repo/db-client";
+import type { SchemaAttr } from "@repo/sw-instantdb";
 
 export type EntityPageGridContext =
   | {

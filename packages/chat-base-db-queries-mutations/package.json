@@ -1,10 +1,12 @@
 {
-  "name": "@repo/db-admin",
+  "name": "@repo/chat-base-db-queries-mutations",
   "version": "0.0.0",
   "type": "module",
   "private": true,
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./queries": "./src/queries.ts",
+    "./mutations": "./src/mutations.ts"
   },
   "scripts": {
     "lint": "biome check .",
@@ -13,8 +15,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@instantdb/admin": "catalog:",
-    "@repo/db-core": "workspace:*"
+    "@repo/chat-base-db-core": "workspace:*"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*"

@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
+    "clean": "rm -rf node_modules apps/*/node_modules packages/*/node_modules",
     "dev": "turbo dev",
     "lint": "turbo lint",
     "lint:fix": "turbo lint:fix",
@@ -31,22 +32,30 @@
     ],
     "catalog": {
       "@ai-sdk/react": "2.0.12",
-      "@instantdb/admin": "v0.20.23-experimental.drewh-new-query-types.16950310599",
-      "@instantdb/core": "v0.20.23-experimental.drewh-new-query-types.16950310599",
-      "@instantdb/react": "v0.20.23-experimental.drewh-new-query-types.16950310599",
-      "@instantdb/react-native": "v0.20.23-experimental.drewh-new-query-types.16950310599",
+      "@instantdb/admin": "0.20.23-experimental.drewh-new-query-types.16951913984",
+      "@instantdb/core": "0.20.23-experimental.drewh-new-query-types.16951913984",
+      "@instantdb/react": "0.20.23-experimental.drewh-new-query-types.16951913984",
+      "@instantdb/react-native": "0.20.23-experimental.drewh-new-query-types.16951913984",
+      "@tailwindcss/postcss": "4.1.11",
+      "@tanstack/query-core": "5.83.1",
+      "@trpc/client": "11.4.4",
+      "@trpc/server": "11.4.4",
+      "@trpc/tanstack-react-query": "11.4.4",
       "@types/node": "^22",
       "@types/react": "19.1.9",
       "@types/react-dom": "19.1.7",
       "ai": "5.0.11",
       "ag-grid-enterprise": "34.1.1",
       "ag-grid-react": "34.1.1",
-      "instant-cli": "v0.20.23-experimental.drewh-new-query-types.16950310599",
+      "instant-cli": "0.20.23-experimental.drewh-new-query-types.16951913984",
       "lucide-react": "0.539.0",
       "next": "15.4.6",
       "react": "19.1.0",
       "react-dom": "19.1.0",
+      "tailwindcss": "4.1.11",
+      "@sentry/react": "10.3.0",
       "sonner": "2.0.7",
+      "vitest": "3.2.4",
       "zod": "4.0.17"
     },
     "catalogs": {
@@ -54,6 +63,7 @@
     }
   },
   "dependencies": {
+    "@radix-ui/react-use-controllable-state": "^1.2.2",
     "@types/bun": "^1.2.19",
     "next": "^15.4.6"
   }

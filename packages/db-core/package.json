@@ -5,6 +5,8 @@
   "private": true,
   "exports": {
     ".": "./src/index.ts",
+    "./client": "./src/client/index.ts",
+    "./server": "./src/server/index.ts",
     "./schema": "./src/instant.schema.ts",
     "./perms": "./src/instant.perms.ts",
     "./utils": "./src/utils.ts",
@@ -19,8 +21,13 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@instantdb/admin": "catalog:",
     "@instantdb/core": "catalog:",
-    "zod": "^4.0.16"
+    "@instantdb/react": "catalog:",
+    "@instantdb/react-native": "catalog:",
+    "@repo/sw-instantdb": "workspace:*",
+    "@sentry/react": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

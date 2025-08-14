@@ -2,9 +2,13 @@ import type { InstantConfig, InstaQLOptions } from "@instantdb/core";
 import { type InstantReactWebDatabase, init } from "@instantdb/react";
 import { mutations, queries } from "@repo/db-core";
 import schema, { type AppSchema } from "@repo/db-core/schema";
-import type { RegisteredMutation, RegisteredQuery } from "@repo/db-core/utils";
-import { useNamespacesQuery, useSchemaQuery } from "./explorer-queries";
-import { initSentry, logError } from "./sentry";
+import {
+  type RegisteredMutation,
+  type RegisteredQuery,
+  useNamespacesQuery,
+  useSchemaQuery,
+} from "@repo/sw-instantdb";
+import { initSentry, logError } from "../sentry";
 
 const getInstantAppId = () => {
   if (process.env.NEXT_PUBLIC_INSTANT_APP_ID) {
@@ -27,11 +31,13 @@ const baseDb = init({
   useDateObjects: true,
 });
 
-// biome-ignore lint/suspicious/noExplicitAny: helper type
-const useRegisteredQuery = <TQuery extends RegisteredQuery<any, any>>(
+const useRegisteredQuery = <
+  // biome-ignore lint/suspicious/noExplicitAny: helper type
+  TQuery extends RegisteredQuery<AppSchema, any, any>,
+>(
   query: TQuery,
   // biome-ignore lint/suspicious/noExplicitAny: helper type
-  args: TQuery extends RegisteredQuery<infer _TArgs, any>
+  args: TQuery extends RegisteredQuery<AppSchema, infer _TArgs, any>
     ? Parameters<TQuery["queryOptions"]>[0]
     : never,
   opts?: InstaQLOptions
@@ -65,10 +71,12 @@ const useRegisteredQuery = <TQuery extends RegisteredQuery<any, any>>(
   return result;
 };
 
-// biome-ignore lint/suspicious/noExplicitAny: helper type
-const useRegisteredMutation = <TMutation extends RegisteredMutation<any>>(
+const useRegisteredMutation = <
+  // biome-ignore lint/suspicious/noExplicitAny: helper type
+  TMutation extends RegisteredMutation<AppSchema, any>,
+>(
   mutation: TMutation,
-  args: TMutation extends RegisteredMutation<infer _TArgs>
+  args: TMutation extends RegisteredMutation<AppSchema, infer _TArgs>
     ? Parameters<TMutation["mutationOptions"]>[0]
     : never
 ) => {
@@ -105,10 +113,10 @@ const useRegisteredMutation = <TMutation extends RegisteredMutation<any>>(
 // Non-hook version for executing registered mutations
 const executeRegisteredMutation = async <
   // biome-ignore lint/suspicious/noExplicitAny: helper type
-  TMutation extends RegisteredMutation<any>,
+  TMutation extends RegisteredMutation<AppSchema, any>,
 >(
   mutation: TMutation,
-  args: TMutation extends RegisteredMutation<infer _TArgs>
+  args: TMutation extends RegisteredMutation<AppSchema, infer _TArgs>
     ? Parameters<TMutation["mutationOptions"]>[0]
     : never
 ) => {
@@ -166,4 +174,4 @@ export const db: Omit<
   },
 };
 
-export type { UseNamespacesQueryProps } from "./explorer-queries";
+export { dangerousUnsafeDb } from "./__dangerously-unsafe-client";

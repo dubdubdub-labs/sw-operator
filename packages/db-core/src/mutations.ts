@@ -1,7 +1,10 @@
 import { id, init, type TransactionChunk } from "@instantdb/core";
+import { forSchema } from "@repo/sw-instantdb";
 import { z } from "zod";
 import schema, { type AppSchema } from "./instant.schema";
-import { mutation, mutationSet } from "./utils";
+
+// Bind once for mutations too
+const { mutation, mutationSet } = forSchema<AppSchema>();
 
 export const db = init({
   appId: process.env.NEXT_PUBLIC_INSTANT_APP_ID ?? "",
@@ -15,13 +18,18 @@ const filterChunks = (
     | undefined
   )[]
 ): TransactionChunk<AppSchema, keyof AppSchema["entities"]>[] => {
-  return chunks.filter((chunk) => chunk !== undefined);
+  return chunks.filter(
+    (
+      chunk
+    ): chunk is TransactionChunk<AppSchema, keyof AppSchema["entities"]> =>
+      chunk !== undefined
+  );
 };
 
 // Example mutations demonstrating usage
 export const createUser = mutation({
   args: z.object({
-    email: z.string().email(),
+    email: z.email(),
     name: z.string(),
     age: z.number().int().positive().optional(),
   }),
@@ -44,7 +52,7 @@ const editCellValue = mutation({
   }),
   handler: ({ entityName, entityItemId, value, attrName }) => {
     return [
-      // @ts-expect-error - this is a super hack; never do anything like this elsewhere please and thank you and love you
+      // @ts-expect-error - intentional explorer hack
       db.tx?.[entityName]?.[entityItemId]?.update({
         [attrName]: value,
       }) ?? [],

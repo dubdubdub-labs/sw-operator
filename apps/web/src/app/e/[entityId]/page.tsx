@@ -1,5 +1,6 @@
 "use client";
 
+import { dangerousUnsafeDb } from "@repo/db-core/client";
 import { useCurrentNamespace } from "@repo/hooks";
 import { use } from "react";
 import { Grid } from "@/components/grid";
@@ -14,7 +15,10 @@ export default function EntityPage({
 }) {
   const { entityId: encodedEntityId } = use(params);
   const entityId = decodeURIComponent(encodedEntityId);
-  const { itemsRes, namespace } = useCurrentNamespace({ entityId });
+  const { itemsRes, namespace } = useCurrentNamespace({
+    db: dangerousUnsafeDb,
+    entityId,
+  });
 
   const colDefs = getColDefsFromAttrs(namespace?.attrs ?? []);
 

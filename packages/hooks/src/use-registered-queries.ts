@@ -1,5 +1,6 @@
-import type { RegisteredQuery } from "@repo/db-client";
-import { db } from "@repo/db-client";
+import { db } from "@repo/db-core/client";
+import type { AppSchema } from "@repo/db-core/schema";
+import type { RegisteredQuery } from "@repo/sw-instantdb";
 
 const flattenRegisteredQueries = (
   registeredQueries: typeof db.registeredQueries
@@ -7,7 +8,7 @@ const flattenRegisteredQueries = (
   const result: Array<{
     path: string[];
     // biome-ignore lint/suspicious/noExplicitAny: helper type
-    query: RegisteredQuery<any, any>;
+    query: RegisteredQuery<AppSchema, any, any>;
     fullPath: string;
   }> = [];
 
@@ -27,7 +28,7 @@ const flattenRegisteredQueries = (
         result.push({
           path: currentPath,
           // biome-ignore lint/suspicious/noExplicitAny: helper type
-          query: value as RegisteredQuery<any, any>,
+          query: value as RegisteredQuery<AppSchema, any, any>,
           fullPath: currentPath.join("."),
         });
       } else if (value && typeof value === "object") {

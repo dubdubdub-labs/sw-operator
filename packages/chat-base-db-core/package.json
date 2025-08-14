@@ -1,0 +1,29 @@
+{
+  "name": "@repo/chat-base-db-core",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts",
+    "./client": "./src/client.ts",
+    "./server": "./src/server.ts"
+  },
+  "scripts": {
+    "db:push-schema": "instant-cli push schema",
+    "db:push-perms": "instant-cli push perms",
+    "lint": "biome check .",
+    "lint:fix": "biome check . --write",
+    "lint:fix:unsafe": "biome check . --unsafe --write",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@instantdb/admin": "catalog:",
+    "@instantdb/core": "catalog:",
+    "@instantdb/react": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "instant-cli": "catalog:"
+  }
+}

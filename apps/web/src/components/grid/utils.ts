@@ -1,5 +1,4 @@
-import type { SchemaAttr } from "@repo/db-client";
-import { checkIsIdAttr } from "@repo/db-client/utils";
+import { checkIsIdAttr, type SchemaAttr } from "@repo/sw-instantdb";
 import type { ColDef } from "ag-grid-enterprise";
 import type { EntityPageColDefContext } from "./entity-page-contexts";
 import { PlatformColType } from "./platform-col-types";

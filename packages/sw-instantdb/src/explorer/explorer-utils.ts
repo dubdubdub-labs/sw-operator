@@ -3,7 +3,7 @@ import type {
   SchemaAttr,
   SchemaNamespace,
   SearchFilter,
-} from "./instantdb-types";
+} from "./explorer-types";
 
 // We show most attrs in the explorer except for some system attrs
 function isVisibleAttr(attr: DBAttr) {

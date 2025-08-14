@@ -16,11 +16,11 @@
   "dependencies": {
     "@repo/trpc-core": "workspace:*",
     "@repo/vitest-config": "workspace:*",
-    "@trpc/server": "11.4.4",
+    "@trpc/server": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "vitest": "^3.2.4"
+    "vitest": "catalog:"
   }
 }

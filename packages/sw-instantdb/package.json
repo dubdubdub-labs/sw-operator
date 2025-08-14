@@ -1,12 +1,10 @@
 {
-  "name": "@repo/db-client",
+  "name": "@repo/sw-instantdb",
   "version": "0.0.0",
   "type": "module",
   "private": true,
   "exports": {
-    ".": "./src/index.ts",
-    "./dangerous-unsafe-client": "./src/dangerous-unsafe-client.ts",
-    "./utils": "./src/utils.ts"
+    ".": "./src/index.ts"
   },
   "scripts": {
     "lint": "biome check .",
@@ -18,9 +16,9 @@
     "@instantdb/core": "catalog:",
     "@instantdb/react": "catalog:",
     "@instantdb/react-native": "catalog:",
-    "@repo/db-core": "workspace:*",
-    "@sentry/react": "10.3.0",
-    "react": "catalog:"
+    "@sentry/react": "catalog:",
+    "react": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

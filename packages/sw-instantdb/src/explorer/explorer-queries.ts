@@ -1,9 +1,21 @@
+import type { InstantConfig, InstantUnknownSchemaDef } from "@instantdb/core";
+import type { InstantReactWebDatabase } from "@instantdb/react";
+import type { InstantReactNativeDatabase } from "@instantdb/react-native";
 import { useEffect, useState } from "react";
-import { dangerousUnsafeDb } from "./dangerous-unsafe-client";
-import type { DBAttr, SchemaNamespace, SearchFilter } from "./instantdb-types";
-import { dbAttrsToExplorerSchema, makeWhere } from "./utils";
+import type { DBAttr, SchemaNamespace, SearchFilter } from "./explorer-types";
+import { dbAttrsToExplorerSchema, makeWhere } from "./explorer-utils";
 
-export type UseNamespacesQueryProps = {
+export type UseNamespacesQueryProps<
+  DATABASE extends
+    | InstantReactWebDatabase<
+        InstantUnknownSchemaDef,
+        InstantConfig<InstantUnknownSchemaDef, true>
+      >
+    | InstantReactNativeDatabase<
+        InstantUnknownSchemaDef,
+        InstantConfig<InstantUnknownSchemaDef, true>
+      >,
+> = {
   selectedNs?: SchemaNamespace;
   navWhere?: [string, unknown];
   searchFilters?: SearchFilter[];
@@ -11,9 +23,20 @@ export type UseNamespacesQueryProps = {
   offset?: number;
   sortAttr?: string;
   sortAsc?: boolean;
+  db: DATABASE;
 };
 
-export function useNamespacesQuery({
+export function useNamespacesQuery<
+  DATABASE extends
+    | InstantReactWebDatabase<
+        InstantUnknownSchemaDef,
+        InstantConfig<InstantUnknownSchemaDef, true>
+      >
+    | InstantReactNativeDatabase<
+        InstantUnknownSchemaDef,
+        InstantConfig<InstantUnknownSchemaDef, true>
+      >,
+>({
   selectedNs,
   navWhere,
   searchFilters,
@@ -21,7 +44,8 @@ export function useNamespacesQuery({
   offset,
   sortAttr,
   sortAsc,
-}: UseNamespacesQueryProps) {
+  db,
+}: UseNamespacesQueryProps<DATABASE>) {
   const direction: "asc" | "desc" = sortAsc ? "asc" : "desc";
 
   const where = makeWhere(navWhere, searchFilters);
@@ -49,9 +73,9 @@ export function useNamespacesQuery({
    * we are doing this because the above query builder pattern is a bit of a hack
    */
   // @ts-expect-error - aggregate is not a valid query param
-  const itemsRes = dangerousUnsafeDb.useQuery(iql);
+  const itemsRes = db.useQuery(iql);
 
-  const allRes = dangerousUnsafeDb.useQuery(
+  const allRes = db.useQuery(
     selectedNs
       ? {
           [selectedNs.name]: {
@@ -80,7 +104,21 @@ export function useNamespacesQuery({
   };
 }
 
-export const useSchemaQuery = () => {
+export const useSchemaQuery = <
+  DATABASE extends
+    | InstantReactWebDatabase<
+        InstantUnknownSchemaDef,
+        InstantConfig<InstantUnknownSchemaDef, true>
+      >
+    | InstantReactNativeDatabase<
+        InstantUnknownSchemaDef,
+        InstantConfig<InstantUnknownSchemaDef, true>
+      >,
+>({
+  db,
+}: {
+  db: DATABASE;
+}) => {
   const [state, setState] = useState<
     | {
         namespaces: SchemaNamespace[];
@@ -98,8 +136,9 @@ export const useSchemaQuery = () => {
   // happens.
   //
   // In the future, we may want a special `attr-changed` event.
-  dangerousUnsafeDb.useQuery({ ____explorer___: {} });
+  db.useQuery({ ____explorer___: {} });
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: this is a hack
   useEffect(() => {
     function onAttrs(_oAttrs: Record<string, DBAttr>) {
       setState({
@@ -107,7 +146,7 @@ export const useSchemaQuery = () => {
         namespaces: dbAttrsToExplorerSchema(_oAttrs),
       });
     }
-    return dangerousUnsafeDb._core._reactor.subscribeAttrs(onAttrs);
+    return db._core._reactor.subscribeAttrs(onAttrs);
   }, []);
 
   return state;

@@ -13,7 +13,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@repo/db-client": "workspace:*",
+    "@repo/db-core": "workspace:*",
+    "@repo/sw-instantdb": "workspace:*",
     "@repo/trpc-app": "workspace:*",
     "react": "catalog:",
     "react-dom": "catalog:"

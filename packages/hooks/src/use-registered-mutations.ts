@@ -1,5 +1,6 @@
-import type { RegisteredMutation } from "@repo/db-client";
-import { db } from "@repo/db-client";
+import { db } from "@repo/db-core/client";
+import type { AppSchema } from "@repo/db-core/schema";
+import type { RegisteredMutation } from "@repo/sw-instantdb";
 
 const flattenRegisteredMutations = (
   registeredMutations: typeof db.registeredMutations
@@ -7,7 +8,7 @@ const flattenRegisteredMutations = (
   const result: Array<{
     path: string[];
     // biome-ignore lint/suspicious/noExplicitAny: helper type
-    mutation: RegisteredMutation<any>;
+    mutation: RegisteredMutation<AppSchema, any>;
     fullPath: string;
   }> = [];
 
@@ -27,7 +28,7 @@ const flattenRegisteredMutations = (
         result.push({
           path: currentPath,
           // biome-ignore lint/suspicious/noExplicitAny: helper type
-          mutation: value as RegisteredMutation<any>,
+          mutation: value as RegisteredMutation<AppSchema, any>,
           fullPath: currentPath.join("."),
         });
       } else if (value && typeof value === "object") {
