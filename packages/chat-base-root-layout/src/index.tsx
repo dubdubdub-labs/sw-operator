@@ -1,5 +1,4 @@
 import { RootLayout } from "@repo/root-layout";
-import "@repo/ui/globals.css";
 import { cn } from "@repo/ui/lib/utils";
 import { Geist, Geist_Mono } from "next/font/google";
 
@@ -25,7 +24,7 @@ export function ChatBaseRootLayout({
   return (
     <RootLayout
       bodyClassName={cn(
-        `${geistSans.variable} ${geistMono.variable} bg-blue-500`,
+        `${geistSans.variable} ${geistMono.variable}`,
         bodyClassName
       )}
       htmlClassName={cn("", htmlClassName)}

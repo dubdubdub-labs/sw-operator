@@ -17,10 +17,10 @@
   },
   "peerDependencies": {
     "@repo/ui": "workspace:*",
-    "next": "15.4.6",
+    "next": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "tailwindcss": "4.1.11"
+    "tailwindcss": "catalog:"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

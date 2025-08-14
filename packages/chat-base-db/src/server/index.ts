@@ -8,3 +8,4 @@ export const adminDb = init({
 });
 
 export * from "@instantdb/admin";
+export * from "../types";

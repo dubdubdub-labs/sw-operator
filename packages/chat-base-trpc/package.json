@@ -13,7 +13,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@repo/chat-base-db-core": "workspace:*"
+    "@repo/chat-base-db": "workspace:*"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*"

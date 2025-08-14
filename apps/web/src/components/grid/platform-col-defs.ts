@@ -2,7 +2,7 @@ import type { ColDef } from "ag-grid-enterprise";
 
 export const customColDefs = {
   "add-attr": {
-    field: "add-attr",
+    headerName: "add-attr",
     editable: false,
     initialFlex: 1,
   },

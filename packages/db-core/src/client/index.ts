@@ -10,20 +10,11 @@ import {
 } from "@repo/sw-instantdb";
 import { initSentry, logError } from "../sentry";
 
-const getInstantAppId = () => {
-  if (process.env.NEXT_PUBLIC_INSTANT_APP_ID) {
-    return process.env.NEXT_PUBLIC_INSTANT_APP_ID;
-  }
-  throw new Error("NEXT_PUBLIC_INSTANT_APP_ID is not set");
-};
-
-const appId = getInstantAppId();
-
 // initialize Sentry for error logging
 initSentry();
 
 const baseDb = init({
-  appId,
+  appId: process.env.NEXT_PUBLIC_INSTANT_APP_ID ?? "",
   schema,
   // @ts-expect-error - __adminToken is not an official option; we're using it as a hack for our db explorer
   __adminToken: process.env.NEXT_PUBLIC_INSTANT_ADMIN_TOKEN,

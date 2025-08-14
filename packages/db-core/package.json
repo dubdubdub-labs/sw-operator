@@ -9,8 +9,7 @@
     "./server": "./src/server/index.ts",
     "./schema": "./src/instant.schema.ts",
     "./perms": "./src/instant.perms.ts",
-    "./utils": "./src/utils.ts",
-    "./types": "./src/types.ts"
+    "./utils": "./src/utils.ts"
   },
   "scripts": {
     "db:push-schema": "instant-cli push schema",

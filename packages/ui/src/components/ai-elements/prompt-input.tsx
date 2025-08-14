@@ -11,7 +11,13 @@ import {
 import { Textarea } from "@repo/ui/components/textarea";
 import { cn } from "@repo/ui/lib/utils";
 import type { ChatStatus } from "ai";
-import { Loader2Icon, SendIcon, SquareIcon, XIcon } from "lucide-react";
+import {
+  Loader2Icon,
+  type LucideIcon,
+  SendIcon,
+  SquareIcon,
+  XIcon,
+} from "lucide-react";
 import type {
   ComponentProps,
   HTMLAttributes,
@@ -136,6 +142,7 @@ export const PromptInputButton = ({
 
 export type PromptInputSubmitProps = ComponentProps<typeof Button> & {
   status?: ChatStatus;
+  SendIcon?: LucideIcon;
 };
 
 export const PromptInputSubmit = ({
@@ -144,9 +151,14 @@ export const PromptInputSubmit = ({
   size = "icon",
   status,
   children,
+  SendIcon: PropsSendIcon,
   ...props
 }: PromptInputSubmitProps) => {
-  let Icon = <SendIcon className="size-4" />;
+  let Icon = PropsSendIcon ? (
+    <PropsSendIcon className="size-4" />
+  ) : (
+    <SendIcon className="size-4" />
+  );
 
   if (status === "submitted") {
     Icon = <Loader2Icon className="size-4 animate-spin" />;

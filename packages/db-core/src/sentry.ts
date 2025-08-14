@@ -4,7 +4,6 @@ import {
   init,
   withScope,
 } from "@sentry/react";
-import { getEnvVar } from "./utils";
 
 let sentryInitialized = false;
 
@@ -13,7 +12,12 @@ export const initSentry = () => {
     return;
   }
 
-  const dsn = getEnvVar("NEXT_PUBLIC_SENTRY_DSN");
+  const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
+
+  if (!dsn) {
+    console.warn("SENTRY_DSN is not set");
+    return;
+  }
 
   init({
     dsn,
@@ -47,14 +51,13 @@ export const logError = (
   // add context if provided
   if (context) {
     withScope((scope) => {
-      for (const [key, value] of Object.entries(context)) {
-        scope.setTag(key, String(value));
+      for (const [k, v] of Object.entries(context ?? {})) {
+        scope.setTag(k, String(v));
       }
-      if (typeof error === "string") {
-        captureMessage(error, "error");
-      } else {
-        captureException(error);
-      }
+
+      typeof error === "string"
+        ? captureMessage(error, "error")
+        : captureException(error);
     });
   }
 };

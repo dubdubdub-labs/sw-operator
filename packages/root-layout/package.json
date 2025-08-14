@@ -18,8 +18,8 @@
   },
   "peerDependencies": {
     "@repo/ui": "workspace:*",
-    "next": "15.4.6",
-    "tailwindcss": "4.1.11"
+    "next": "catalog:",
+    "tailwindcss": "catalog:"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

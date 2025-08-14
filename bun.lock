@@ -6,7 +6,6 @@
       "dependencies": {
         "@radix-ui/react-use-controllable-state": "^1.2.2",
         "@types/bun": "^1.2.19",
-        "next": "^15.4.6",
       },
       "devDependencies": {
         "@biomejs/biome": "2.1.4",
@@ -23,8 +22,11 @@
       "version": "0.1.0",
       "dependencies": {
         "@ai-sdk/react": "catalog:",
+        "@repo/chat-base-conversation": "workspace:*",
         "@repo/chat-base-hooks": "workspace:*",
         "@repo/chat-base-root-layout": "workspace:*",
+        "@repo/chat-base-route-handler": "workspace:*",
+        "@repo/chat-base-sidebar": "workspace:*",
         "@repo/ui": "workspace:*",
         "ai": "catalog:",
         "lucide-react": "catalog:",
@@ -32,6 +34,7 @@
         "react": "catalog:",
         "react-dom": "catalog:",
         "sonner": "catalog:",
+        "tw-animate-css": "catalog:",
         "zod": "catalog:",
       },
       "devDependencies": {
@@ -60,6 +63,7 @@
         "react": "catalog:",
         "react-dom": "catalog:",
         "sonner": "catalog:",
+        "tw-animate-css": "catalog:",
         "zod": "catalog:",
       },
       "devDependencies": {
@@ -71,13 +75,37 @@
         "tailwindcss": "4.1.11",
       },
     },
-    "packages/chat-base-db-core": {
-      "name": "@repo/chat-base-db-core",
+    "packages/chat-base-conversation": {
+      "name": "@repo/chat-base-conversation",
+      "version": "0.0.0",
+      "dependencies": {
+        "@repo/chat-base-db": "workspace:*",
+        "@repo/chat-base-hooks": "workspace:*",
+      },
+      "devDependencies": {
+        "@repo/typescript-config": "workspace:*",
+        "@types/react": "catalog:",
+        "@types/react-dom": "catalog:",
+      },
+      "peerDependencies": {
+        "@ai-sdk/react": "catalog:",
+        "@repo/ui": "workspace:*",
+        "ai": "catalog:",
+        "lucide-react": "catalog:",
+        "next": "catalog:",
+        "react": "catalog:",
+        "react-dom": "catalog:",
+        "tailwindcss": "catalog:",
+      },
+    },
+    "packages/chat-base-db": {
+      "name": "@repo/chat-base-db",
       "version": "0.0.0",
       "dependencies": {
         "@instantdb/admin": "catalog:",
         "@instantdb/core": "catalog:",
         "@instantdb/react": "catalog:",
+        "@repo/sw-instantdb": "workspace:*",
         "zod": "catalog:",
       },
       "devDependencies": {
@@ -85,24 +113,22 @@
         "instant-cli": "catalog:",
       },
     },
-    "packages/chat-base-db-queries-mutations": {
-      "name": "@repo/chat-base-db-queries-mutations",
-      "version": "0.0.0",
-      "dependencies": {
-        "@repo/chat-base-db-core": "workspace:*",
-      },
-      "devDependencies": {
-        "@repo/typescript-config": "workspace:*",
-      },
-    },
     "packages/chat-base-hooks": {
       "name": "@repo/chat-base-hooks",
       "version": "0.0.0",
       "dependencies": {
-        "@repo/chat-base-db-queries-mutations": "workspace:*",
+        "@ai-sdk/react": "catalog:",
+        "@repo/chat-base-db": "workspace:*",
+        "ai": "catalog:",
       },
       "devDependencies": {
         "@repo/typescript-config": "workspace:*",
+        "@types/react": "catalog:",
+        "@types/react-dom": "catalog:",
+      },
+      "peerDependencies": {
+        "react": "catalog:",
+        "react-dom": "catalog:",
       },
     },
     "packages/chat-base-root-layout": {
@@ -118,17 +144,57 @@
       },
       "peerDependencies": {
         "@repo/ui": "workspace:*",
-        "next": "15.4.6",
+        "next": "catalog:",
         "react": "catalog:",
         "react-dom": "catalog:",
-        "tailwindcss": "4.1.11",
+        "tailwindcss": "catalog:",
+      },
+    },
+    "packages/chat-base-route-handler": {
+      "name": "@repo/chat-base-route-handler",
+      "version": "0.0.0",
+      "dependencies": {
+        "@repo/chat-base-db": "workspace:*",
+      },
+      "devDependencies": {
+        "@repo/typescript-config": "workspace:*",
+      },
+      "peerDependencies": {
+        "ai": "catalog:",
+      },
+    },
+    "packages/chat-base-sidebar": {
+      "name": "@repo/chat-base-sidebar",
+      "version": "0.0.0",
+      "devDependencies": {
+        "@repo/typescript-config": "workspace:*",
+        "@types/react": "catalog:",
+        "@types/react-dom": "catalog:",
+      },
+      "peerDependencies": {
+        "@repo/ui": "workspace:*",
+        "lucide-react": "catalog:",
+        "next": "catalog:",
+        "react": "catalog:",
+        "react-dom": "catalog:",
+        "tailwindcss": "catalog:",
+      },
+    },
+    "packages/chat-base-store": {
+      "name": "@repo/chat-base-store",
+      "version": "0.0.0",
+      "dependencies": {
+        "zustand": "catalog:",
+      },
+      "devDependencies": {
+        "@repo/typescript-config": "workspace:*",
       },
     },
     "packages/chat-base-trpc": {
       "name": "@repo/chat-base-trpc",
       "version": "0.0.0",
       "dependencies": {
-        "@repo/chat-base-db-core": "workspace:*",
+        "@repo/chat-base-db": "workspace:*",
       },
       "devDependencies": {
         "@repo/typescript-config": "workspace:*",
@@ -196,8 +262,8 @@
       },
       "peerDependencies": {
         "@repo/ui": "workspace:*",
-        "next": "15.4.6",
-        "tailwindcss": "4.1.11",
+        "next": "catalog:",
+        "tailwindcss": "catalog:",
       },
     },
     "packages/scripts": {
@@ -310,7 +376,7 @@
         "remark-math": "6.0.0",
         "sonner": "2.0.7",
         "tailwind-merge": "3.3.1",
-        "tw-animate-css": "1.3.6",
+        "tw-animate-css": "catalog:",
         "use-stick-to-bottom": "1.1.1",
         "vaul": "1.1.2",
         "zod": "catalog:",
@@ -360,8 +426,10 @@
     "react-dom": "19.1.0",
     "sonner": "2.0.7",
     "tailwindcss": "4.1.11",
+    "tw-animate-css": "1.3.6",
     "vitest": "3.2.4",
     "zod": "4.0.17",
+    "zustand": "5.0.7",
   },
   "catalogs": {
     "testing": {
@@ -372,7 +440,7 @@
 
     "@ai-sdk/provider": ["@ai-sdk/provider@2.0.0", "", { "dependencies": { "json-schema": "^0.4.0" } }, "sha512-6o7Y2SeO9vFKB8lArHXehNuusnpddKPk7xqL7T2/b+OvXMRIXUO1rR4wcv1hAFUAT9avGZshty3Wlua/XA7TvA=="],
 
-    "@ai-sdk/provider-utils": ["@ai-sdk/provider-utils@3.0.2", "", { "dependencies": { "@ai-sdk/provider": "2.0.0", "@standard-schema/spec": "^1.0.0", "eventsource-parser": "^3.0.3", "zod-to-json-schema": "^3.24.1" }, "peerDependencies": { "zod": "^3.25.76 || ^4" } }, "sha512-0a5a6VafkV6+0irdpqnub8WE6qzG2VMsDBpXb9NQIz8c4TG8fI+GSTFIL9sqrLEwXrHdiRj7fwJsrir4jClL0w=="],
+    "@ai-sdk/provider-utils": ["@ai-sdk/provider-utils@3.0.3", "", { "dependencies": { "@ai-sdk/provider": "2.0.0", "@standard-schema/spec": "^1.0.0", "eventsource-parser": "^3.0.3", "zod-to-json-schema": "^3.24.1" }, "peerDependencies": { "zod": "^3.25.76 || ^4" } }, "sha512-kAxIw1nYmFW1g5TvE54ZB3eNtgZna0RnLjPUp1ltz1+t9xkXJIuDT4atrwfau9IbS0BOef38wqrI8CjFfQrxhw=="],
 
     "@ai-sdk/react": ["@ai-sdk/react@2.0.12", "", { "dependencies": { "@ai-sdk/provider-utils": "3.0.3", "ai": "5.0.12", "swr": "^2.2.5", "throttleit": "2.1.0" }, "peerDependencies": { "react": "^18 || ^19 || ^19.0.0-rc", "zod": "^3.25.76 || ^4" }, "optionalPeers": ["zod"] }, "sha512-r+kuyYxhgUV6RDJYDoeN3dqgdxOyarSflWGxM6rkX75gwpLL8+LF/DM3CyfWUG6uDbIRVZ1r6ag/uLoD6cxOaQ=="],
 
@@ -830,13 +898,19 @@
 
     "@react-native/virtualized-lists": ["@react-native/virtualized-lists@0.80.2", "", { "dependencies": { "invariant": "^2.2.4", "nullthrows": "^1.1.1" }, "peerDependencies": { "@types/react": "^19.0.0", "react": "*", "react-native": "*" }, "optionalPeers": ["@types/react"] }, "sha512-kXsIV2eB73QClbbH/z/lRhZkyj3Dke4tarM5w2yXSNwJthMPMfj4KqLZ6Lnf0nmPPjz7qo/voKtlrGqlM822Rg=="],
 
-    "@repo/chat-base-db-core": ["@repo/chat-base-db-core@workspace:packages/chat-base-db-core"],
+    "@repo/chat-base-conversation": ["@repo/chat-base-conversation@workspace:packages/chat-base-conversation"],
 
-    "@repo/chat-base-db-queries-mutations": ["@repo/chat-base-db-queries-mutations@workspace:packages/chat-base-db-queries-mutations"],
+    "@repo/chat-base-db": ["@repo/chat-base-db@workspace:packages/chat-base-db"],
 
     "@repo/chat-base-hooks": ["@repo/chat-base-hooks@workspace:packages/chat-base-hooks"],
 
     "@repo/chat-base-root-layout": ["@repo/chat-base-root-layout@workspace:packages/chat-base-root-layout"],
+
+    "@repo/chat-base-route-handler": ["@repo/chat-base-route-handler@workspace:packages/chat-base-route-handler"],
+
+    "@repo/chat-base-sidebar": ["@repo/chat-base-sidebar@workspace:packages/chat-base-sidebar"],
+
+    "@repo/chat-base-store": ["@repo/chat-base-store@workspace:packages/chat-base-store"],
 
     "@repo/chat-base-trpc": ["@repo/chat-base-trpc@workspace:packages/chat-base-trpc"],
 
@@ -2432,9 +2506,11 @@
 
     "zod-to-json-schema": ["zod-to-json-schema@3.24.6", "", { "peerDependencies": { "zod": "^3.24.1" } }, "sha512-h/z3PKvcTcTetyjl1fkj79MHNEjm+HpD6NXheWjzOekY7kV+lwDYnHw+ivHkijnCSMz1yJaWBD9vu/Fcmk+vEg=="],
 
+    "zustand": ["zustand@5.0.7", "", { "peerDependencies": { "@types/react": ">=18.0.0", "immer": ">=9.0.6", "react": ">=18.0.0", "use-sync-external-store": ">=1.2.0" }, "optionalPeers": ["@types/react", "immer", "react", "use-sync-external-store"] }, "sha512-Ot6uqHDW/O2VdYsKLLU8GQu8sCOM1LcoE8RwvLv9uuRT9s6SOHCKs0ZEOhxg+I1Ld+A1Q5lwx+UlKXXUoCZITg=="],
+
     "zwitch": ["zwitch@2.0.4", "", {}, "sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A=="],
 
-    "@ai-sdk/react/@ai-sdk/provider-utils": ["@ai-sdk/provider-utils@3.0.3", "", { "dependencies": { "@ai-sdk/provider": "2.0.0", "@standard-schema/spec": "^1.0.0", "eventsource-parser": "^3.0.3", "zod-to-json-schema": "^3.24.1" }, "peerDependencies": { "zod": "^3.25.76 || ^4" } }, "sha512-kAxIw1nYmFW1g5TvE54ZB3eNtgZna0RnLjPUp1ltz1+t9xkXJIuDT4atrwfau9IbS0BOef38wqrI8CjFfQrxhw=="],
+    "@ai-sdk/gateway/@ai-sdk/provider-utils": ["@ai-sdk/provider-utils@3.0.2", "", { "dependencies": { "@ai-sdk/provider": "2.0.0", "@standard-schema/spec": "^1.0.0", "eventsource-parser": "^3.0.3", "zod-to-json-schema": "^3.24.1" }, "peerDependencies": { "zod": "^3.25.76 || ^4" } }, "sha512-0a5a6VafkV6+0irdpqnub8WE6qzG2VMsDBpXb9NQIz8c4TG8fI+GSTFIL9sqrLEwXrHdiRj7fwJsrir4jClL0w=="],
 
     "@ai-sdk/react/ai": ["ai@5.0.12", "", { "dependencies": { "@ai-sdk/gateway": "1.0.6", "@ai-sdk/provider": "2.0.0", "@ai-sdk/provider-utils": "3.0.3", "@opentelemetry/api": "1.9.0" }, "peerDependencies": { "zod": "^3.25.76 || ^4" } }, "sha512-gTdzpNd+2W8YWSHtbdVruyBrB0R1F7/w0+ZCWkK64+qwQQrxc2vIbNmv6GlsZvj5OKjGldbPjWMuCUcoYTapXg=="],
 
@@ -2549,6 +2625,8 @@
     "@types/babel__traverse/@babel/types": ["@babel/types@7.28.2", "", { "dependencies": { "@babel/helper-string-parser": "^7.27.1", "@babel/helper-validator-identifier": "^7.27.1" } }, "sha512-ruv7Ae4J5dUYULmeXw1gmb7rYRz57OWCPM57pHojnLq/3Z1CK2lNSLTCVjxVk1F/TZHwOZZrOWi0ur95BbLxNQ=="],
 
     "@types/inquirer/rxjs": ["rxjs@6.6.7", "", { "dependencies": { "tslib": "^1.9.0" } }, "sha512-hTdwr+7yYNIT5n4AMYp85KA6yw2Va0FLa3Rguvbpa4W3I5xynaBZo41cM3XM+4Q6fRMj3sBYIR1VAmZMXYJvRQ=="],
+
+    "ai/@ai-sdk/provider-utils": ["@ai-sdk/provider-utils@3.0.2", "", { "dependencies": { "@ai-sdk/provider": "2.0.0", "@standard-schema/spec": "^1.0.0", "eventsource-parser": "^3.0.3", "zod-to-json-schema": "^3.24.1" }, "peerDependencies": { "zod": "^3.25.76 || ^4" } }, "sha512-0a5a6VafkV6+0irdpqnub8WE6qzG2VMsDBpXb9NQIz8c4TG8fI+GSTFIL9sqrLEwXrHdiRj7fwJsrir4jClL0w=="],
 
     "anymatch/picomatch": ["picomatch@2.3.1", "", {}, "sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA=="],
 

@@ -28,6 +28,9 @@
         "useExhaustiveSwitchCases": "off",
         "useJsonImportAttribute": "off"
       },
+      "style": {
+        "noNonNullAssertion": "off"
+      },
       "suspicious": {
         "noConsole": "off"
       }

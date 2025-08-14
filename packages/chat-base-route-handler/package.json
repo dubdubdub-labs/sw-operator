@@ -1,12 +1,10 @@
 {
-  "name": "@repo/chat-base-db-queries-mutations",
+  "name": "@repo/chat-base-route-handler",
   "version": "0.0.0",
   "type": "module",
   "private": true,
   "exports": {
-    ".": "./src/index.ts",
-    "./queries": "./src/queries.ts",
-    "./mutations": "./src/mutations.ts"
+    ".": "./src/index.ts"
   },
   "scripts": {
     "lint": "biome check .",
@@ -15,7 +13,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@repo/chat-base-db-core": "workspace:*"
+    "@repo/chat-base-db": "workspace:*"
+  },
+  "peerDependencies": {
+    "ai": "catalog:"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*"
