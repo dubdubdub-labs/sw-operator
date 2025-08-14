@@ -24,7 +24,9 @@
         "noInvalidPositionAtImportRule": "off"
       },
       "nursery": {
-        "noUnknownAtRule": "off"
+        "noUnknownAtRule": "off",
+        "useExhaustiveSwitchCases": "off",
+        "useJsonImportAttribute": "off"
       },
       "suspicious": {
         "noConsole": "off"
