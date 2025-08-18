@@ -53,6 +53,7 @@
       "version": "0.1.0",
       "dependencies": {
         "@ai-sdk/react": "catalog:",
+        "@hookform/resolvers": "^5.2.1",
         "@repo/chat-base-conversation": "workspace:*",
         "@repo/chat-base-hooks": "workspace:*",
         "@repo/chat-base-root-layout": "workspace:*",
@@ -64,9 +65,10 @@
         "next": "catalog:",
         "react": "catalog:",
         "react-dom": "catalog:",
+        "react-hook-form": "^7.62.0",
         "sonner": "catalog:",
         "tw-animate-css": "catalog:",
-        "zod": "catalog:",
+        "zod": "^4.0.17",
         "zustand": "catalog:",
       },
       "devDependencies": {

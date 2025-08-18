@@ -1,6 +1,8 @@
 import "./globals.css";
 import { cn } from "@repo/ui/lib/utils";
 import { Geist, Geist_Mono } from "next/font/google";
+import { CSSVariablesProvider } from "@/components/css-variables-provider";
+import { DynamicBackground } from "@/components/dynamic-background";
 import { MetaAgentChat } from "@/components/meta-agent-chat";
 
 const geistSans = Geist({
@@ -22,10 +24,11 @@ export default function RootLayout({
     <html className="h-full overscroll-none" lang="en">
       <body
         className={cn(
-          `${geistSans.variable} ${geistMono.variable} h-full overscroll-none bg-[url('/tahoe-bg-6k.png')] bg-center bg-cover antialiased`
+          `${geistSans.variable} ${geistMono.variable} h-full overscroll-none antialiased`
         )}
       >
-        <div className="absolute inset-0 z-0 bg-white/25 backdrop-blur-3xl" />
+        <CSSVariablesProvider />
+        <DynamicBackground />
         <main className="relative z-10">{children}</main>
         <MetaAgentChat />
       </body>

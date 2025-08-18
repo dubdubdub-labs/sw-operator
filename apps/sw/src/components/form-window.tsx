@@ -1,13 +1,24 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Badge } from "@repo/ui/components/badge";
 import { Button } from "@repo/ui/components/button";
-import { Label } from "@repo/ui/components/label";
 import { Progress } from "@repo/ui/components/progress";
-import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useCallback, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { FadeScrollView } from "./fade-scroll-view";
-import { FormInput, FormTextarea } from "./form-inputs";
+import {
+  GlassForm,
+  GlassFormControl,
+  GlassFormField,
+  GlassFormItem,
+  GlassFormLabel,
+  GlassFormMessage,
+  GlassInput,
+  GlassTextarea,
+} from "./form-inputs";
 import { Window } from "./window";
 import { WindowToolbar } from "./window-toolbar";
 
@@ -101,9 +112,30 @@ const demoSteps: FormStep[] = [
   },
 ];
 
+const createStepSchema = (fields: FormField[]) => {
+  const schemaObject: Record<string, z.ZodString | z.ZodOptional<z.ZodString>> =
+    {};
+
+  for (const field of fields) {
+    if (field.required) {
+      schemaObject[field.id] = z.string().min(1, `${field.label} is required`);
+    } else {
+      schemaObject[field.id] = z.string().optional();
+    }
+  }
+
+  return z.object(schemaObject);
+};
+
+const getAllFieldsSchema = () => {
+  const allFields = demoSteps.flatMap((step) => step.fields);
+  return createStepSchema(allFields);
+};
+
+type FormData = z.infer<ReturnType<typeof getAllFieldsSchema>>;
+
 export function FormWindow() {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [formData, setFormData] = useState<Record<string, string>>({});
   const [isToolbarHovered, setIsToolbarHovered] = useState(false);
 
   const currentStep = demoSteps[currentStepIndex];
@@ -113,18 +145,27 @@ export function FormWindow() {
   const totalSteps = demoSteps.length;
   const progressPercentage = Math.round((completedSteps / totalSteps) * 100);
 
-  const updateFieldValue = useCallback((fieldId: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [fieldId]: value,
-    }));
-  }, []);
+  const form = useForm<FormData>({
+    resolver: zodResolver(getAllFieldsSchema()),
+    defaultValues: {},
+    mode: "onChange",
+  });
 
-  const goToNextStep = useCallback(() => {
-    if (!isLastStep) {
-      setCurrentStepIndex((prev) => prev + 1);
+  const goToNextStep = useCallback(async () => {
+    if (!isLastStep && currentStep) {
+      const stepSchema = createStepSchema(currentStep.fields);
+      const stepData: Record<string, string> = {};
+
+      for (const field of currentStep.fields) {
+        stepData[field.id] = form.getValues(field.id as keyof FormData) || "";
+      }
+
+      const isValid = await stepSchema.safeParseAsync(stepData);
+      if (isValid.success) {
+        setCurrentStepIndex((prev) => prev + 1);
+      }
     }
-  }, [isLastStep]);
+  }, [isLastStep, currentStep, form]);
 
   const goToPreviousStep = useCallback(() => {
     if (!isFirstStep) {
@@ -132,50 +173,59 @@ export function FormWindow() {
     }
   }, [isFirstStep]);
 
-  const handleSubmit = useCallback(() => {
-    console.log("Form submitted:", formData);
-  }, [formData]);
+  const handleSubmit = useCallback((data: FormData) => {
+    console.log("Form submitted:", data);
+  }, []);
 
   const isCurrentStepValid = useCallback(() => {
-    return currentStep?.fields.every((field) => {
-      if (!field.required) {
-        return true;
-      }
-      const value = formData[field.id];
-      return value && value.trim().length > 0;
-    });
-  }, [currentStep?.fields, formData]);
+    if (!currentStep) {
+      return false;
+    }
+
+    const stepSchema = createStepSchema(currentStep.fields);
+    const stepData: Record<string, string> = {};
+
+    for (const field of currentStep.fields) {
+      stepData[field.id] = form.getValues(field.id as keyof FormData) || "";
+    }
+
+    return stepSchema.safeParse(stepData).success;
+  }, [currentStep, form]);
 
   const renderField = useCallback(
     (field: FormField) => {
-      const value = formData[field.id] || "";
-
       return (
-        <div className="space-y-2" key={field.id}>
-          <Label className="font-medium text-sm" htmlFor={field.id}>
-            {field.label}
-          </Label>
-          {field.type === "textarea" ? (
-            <FormTextarea
-              className="min-h-[80px] resize-none"
-              id={field.id}
-              onChange={(e) => updateFieldValue(field.id, e.target.value)}
-              placeholder={field.placeholder}
-              value={value}
-            />
-          ) : (
-            <FormInput
-              id={field.id}
-              onChange={(e) => updateFieldValue(field.id, e.target.value)}
-              placeholder={field.placeholder}
-              type={field.type}
-              value={value}
-            />
+        <GlassFormField
+          control={form.control}
+          key={field.id}
+          name={field.id as keyof FormData}
+          render={({ field: formField }) => (
+            <GlassFormItem>
+              <GlassFormLabel className="font-medium text-sm">
+                {field.label}
+              </GlassFormLabel>
+              <GlassFormControl>
+                {field.type === "textarea" ? (
+                  <GlassTextarea
+                    className="min-h-[80px] resize-none"
+                    placeholder={field.placeholder}
+                    {...formField}
+                  />
+                ) : (
+                  <GlassInput
+                    placeholder={field.placeholder}
+                    type={field.type}
+                    {...formField}
+                  />
+                )}
+              </GlassFormControl>
+              <GlassFormMessage />
+            </GlassFormItem>
           )}
-        </div>
+        />
       );
     },
-    [formData, updateFieldValue]
+    [form.control]
   );
 
   return (
@@ -224,56 +274,66 @@ export function FormWindow() {
       </WindowToolbar>
 
       <div className="relative flex h-full flex-col">
-        <FadeScrollView
-          className="min-h-0 flex-1 px-3 py-3 pt-14"
-          fadeSize={32}
-        >
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <h2 className="font-semibold text-xl">{currentStep?.title}</h2>
-              {currentStep?.description && (
-                <p className="text-muted-foreground text-sm">
-                  {currentStep?.description}
-                </p>
+        <GlassForm {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)}>
+            <FadeScrollView
+              className="h-full min-h-0 flex-1 px-3 py-6 pt-14"
+              fadeSize={32}
+            >
+              <div className="space-y-4">
+                <div className="space-y-2 px-2">
+                  <h2 className="font-semibold text-xl">
+                    {currentStep?.title}
+                  </h2>
+                  {currentStep?.description && (
+                    <p className="text-foreground/60 text-sm">
+                      {currentStep?.description}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-4">
+                  {currentStep?.fields.map(renderField)}
+                </div>
+              </div>
+            </FadeScrollView>
+
+            <div className="glass3d absolute right-3 bottom-3 flex justify-end gap-1 rounded-full p-1 backdrop-blur-xs">
+              {!isFirstStep && (
+                <Button
+                  className="rounded-full"
+                  onClick={goToPreviousStep}
+                  size="sm"
+                  type="button"
+                  variant="outline"
+                >
+                  Previous
+                </Button>
+              )}
+
+              {isLastStep ? (
+                <Button
+                  className="gap-1 rounded-full"
+                  disabled={!isCurrentStepValid()}
+                  size="sm"
+                  type="submit"
+                >
+                  Submit
+                </Button>
+              ) : (
+                <Button
+                  className="rounded-full"
+                  disabled={!isCurrentStepValid()}
+                  onClick={goToNextStep}
+                  size="sm"
+                  type="button"
+                >
+                  Next
+                </Button>
               )}
             </div>
-
-            <div className="space-y-4">
-              {currentStep?.fields.map(renderField)}
-            </div>
-          </div>
-        </FadeScrollView>
-
-        <div className="glass3d absolute right-3 bottom-3 flex justify-end gap-0.5 rounded-full p-1 backdrop-blur-xs">
-          {!isFirstStep && (
-            <Button
-              className="rounded-full"
-              onClick={goToPreviousStep}
-              variant="outline"
-            >
-              Previous
-            </Button>
-          )}
-
-          {isLastStep ? (
-            <Button
-              className="gap-1 rounded-full"
-              disabled={!isCurrentStepValid()}
-              onClick={handleSubmit}
-            >
-              <CheckCircle2 className="h-4 w-4" />
-              Submit
-            </Button>
-          ) : (
-            <Button
-              className="rounded-full"
-              disabled={!isCurrentStepValid()}
-              onClick={goToNextStep}
-            >
-              Next
-            </Button>
-          )}
-        </div>
+          </form>
+        </GlassForm>
       </div>
     </Window>
   );
