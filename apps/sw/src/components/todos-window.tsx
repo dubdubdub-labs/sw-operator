@@ -10,6 +10,7 @@ import {
 import { Progress } from "@repo/ui/components/progress";
 import { CheckCircle2, ChevronDown, ChevronRight, Circle } from "lucide-react";
 import { useCallback, useState } from "react";
+import { FadeScrollView } from "./fade-scroll-view";
 import { Window } from "./window";
 import { WindowToolbar } from "./window-toolbar";
 
@@ -302,7 +303,7 @@ export function TodosWindow() {
     allTodoIds.length > 0 && allTodoIds.every((id) => collapsedTodos.has(id));
 
   return (
-    <Window>
+    <Window className="p-0">
       <WindowToolbar>
         <div
           className="mb-1 flex h-6 items-center justify-center gap-1 transition-all duration-300 ease-out"
@@ -336,7 +337,10 @@ export function TodosWindow() {
         </div>
       </WindowToolbar>
       <div className="flex h-full flex-col space-y-4">
-        <div className="min-h-0 flex-1 overflow-y-auto">
+        <FadeScrollView
+          className="min-h-0 flex-1 px-3 py-6 pt-14"
+          fadeSize={48}
+        >
           {todos.length > 0 ? (
             <div className="flex flex-col gap-px">
               {todos.map((todo) => (
@@ -356,7 +360,7 @@ export function TodosWindow() {
               No todos found.
             </p>
           )}
-        </div>
+        </FadeScrollView>
       </div>
     </Window>
   );
