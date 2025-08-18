@@ -18,7 +18,9 @@
       "a11y": {
         "useSemanticElements": "off",
         "useAriaPropsForRole": "off",
-        "useFocusableInteractive": "off"
+        "useKeyWithClickEvents": "off",
+        "useFocusableInteractive": "off",
+        "noStaticElementInteractions": "off"
       },
       "correctness": {
         "noInvalidPositionAtImportRule": "off"
@@ -26,7 +28,8 @@
       "nursery": {
         "noUnknownAtRule": "off",
         "useExhaustiveSwitchCases": "off",
-        "useJsonImportAttribute": "off"
+        "useJsonImportAttribute": "off",
+        "noNoninteractiveElementInteractions": "off"
       },
       "style": {
         "noNonNullAssertion": "off"

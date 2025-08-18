@@ -1,0 +1,27 @@
+{
+  "type": "template",
+  "slug": "chat-base-skeleton",
+  "name": "Chat Interface Skeleton",
+  "description": "Minimal chat interface template with sidebar navigation, chat history, and AI conversation support. Built with Next.js 14 App Router, Vercel AI SDK, and modular chat components from shared packages. Includes API routes, TypeScript configuration, and Tailwind CSS styling for rapid chat application development.",
+  "tags": [
+    "chat",
+    "ai",
+    "nextjs",
+    "typescript",
+    "react",
+    "tailwindcss",
+    "vercel-ai-sdk",
+    "template",
+    "skeleton"
+  ],
+  "view": [
+    { "tree": { "path": ".", "depth": 3, "limit": 50 } },
+    { "path": "package.json", "lines": "all" },
+    { "path": "src/app/layout.tsx", "lines": "all" },
+    { "path": "src/app/page.tsx", "lines": "all" },
+    { "path": "src/app/chat/[chatId]/page.tsx", "lines": "all" },
+    { "path": "src/app/api/chat/route.ts", "lines": "all" },
+    { "path": "src/providers/index.tsx", "lines": "all" },
+    { "path": "next.config.ts", "lines": [1, 25] }
+  ]
+}

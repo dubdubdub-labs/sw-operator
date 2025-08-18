@@ -1,0 +1,40 @@
+{
+  "name": "sw",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "biome check .",
+    "lint:fix": "biome check . --write",
+    "lint:fix:unsafe": "biome check . --unsafe --write",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ai-sdk/react": "catalog:",
+    "@repo/chat-base-conversation": "workspace:*",
+    "@repo/chat-base-root-layout": "workspace:*",
+    "@repo/chat-base-sidebar": "workspace:*",
+    "@repo/chat-base-route-handler": "workspace:*",
+    "@repo/ui": "workspace:*",
+    "@repo/chat-base-hooks": "workspace:*",
+    "ai": "catalog:",
+    "lucide-react": "catalog:",
+    "next": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "sonner": "catalog:",
+    "tw-animate-css": "catalog:",
+    "zod": "catalog:",
+    "zustand": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@tailwindcss/postcss": "catalog:",
+    "tailwindcss": "catalog:"
+  }
+}
