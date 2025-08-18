@@ -1,5 +1,7 @@
 "use client";
 
+import { FormWindow } from "@/components/form-window";
+import { PreviewWindow } from "@/components/preview-window";
 import { TodosWindow } from "@/components/todos-window";
 
 export default function Home() {
@@ -8,11 +10,11 @@ export default function Home() {
       <div className="flex flex-col gap-8">
         <div className="flex h-96 w-full gap-8">
           <TodosWindow />
-          <TodosWindow />
+          <FormWindow />
         </div>
         <div className="flex h-96 w-full gap-8">
           <TodosWindow />
-          <TodosWindow />
+          <PreviewWindow />
         </div>
       </div>
     </div>

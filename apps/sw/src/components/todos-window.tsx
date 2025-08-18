@@ -10,109 +10,17 @@ import {
 import { Progress } from "@repo/ui/components/progress";
 import { CheckCircle2, ChevronDown, ChevronRight, Circle } from "lucide-react";
 import { useCallback, useState } from "react";
+import {
+  getAllTodoIds,
+  getAllTodos,
+  parseTodos,
+  sampleTodoMarkdown,
+  type TodoItem,
+  updateTodos,
+} from "../lib/todo-utils";
 import { FadeScrollView } from "./fade-scroll-view";
 import { Window } from "./window";
 import { WindowToolbar } from "./window-toolbar";
-
-interface TodoItem {
-  text: string;
-  completed: boolean;
-  level: number;
-  children: TodoItem[];
-  id: string;
-}
-
-const sampleMarkdown = `
-- [ ] User Authentication System
-  - [x] Design login page
-  - [x] Implement JWT tokens
-  - [ ] Add password reset
-    - [x] Email template
-    - [ ] Reset flow
-    - [ ] Security validation
-  - [ ] Social login integration
-    - [ ] Google OAuth
-    - [ ] GitHub OAuth
-
-- [x] Database Setup
-  - [x] Choose database (PostgreSQL)
-  - [x] Set up migrations
-  - [x] Create user table
-  - [x] Create posts table
-
-- [ ] API Development
-  - [x] Set up Express server
-  - [ ] User endpoints
-    - [x] POST /api/users/register
-    - [x] POST /api/users/login
-    - [ ] GET /api/users/profile
-    - [ ] PUT /api/users/profile
-  - [ ] Post endpoints
-    - [ ] GET /api/posts
-    - [ ] POST /api/posts
-    - [ ] PUT /api/posts/:id
-    - [ ] DELETE /api/posts/:id
-
-- [ ] Frontend Components
-  - [ ] Header component
-  - [ ] Navigation menu
-  - [ ] User profile page
-    - [ ] Profile form
-    - [ ] Avatar upload
-    - [ ] Settings panel
-      - [ ] Privacy settings
-      - [ ] Notification preferences
-        - [ ] Email notifications
-        - [ ] Push notifications
-        - [ ] SMS notifications
-`;
-
-const todoRegex = /^(\s*)-\s*\[([ x])\]\s*(.+)$/;
-
-function parseTodos(markdown: string): TodoItem[] {
-  const lines = markdown.split("\n");
-  const todos: TodoItem[] = [];
-  const stack: TodoItem[] = [];
-  let idCounter = 0;
-
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (!trimmed) {
-      continue;
-    }
-
-    const todoMatch = line.match(todoRegex);
-    if (!todoMatch) {
-      continue;
-    }
-
-    const [, indent, status, text] = todoMatch;
-    const level = Math.floor(indent?.length ?? 0 / 2);
-    const completed = status?.toLowerCase() === "x";
-
-    const todo: TodoItem = {
-      text: text?.trim() ?? "",
-      completed,
-      level,
-      children: [],
-      id: `todo-${idCounter++}`,
-    };
-
-    while ((stack.length > 0 && stack.at(-1)?.level) ?? level <= 0) {
-      stack.pop();
-    }
-
-    if (stack.length === 0) {
-      todos.push(todo);
-    } else {
-      stack.at(-1)?.children.push(todo);
-    }
-
-    stack.push(todo);
-  }
-
-  return todos;
-}
 
 function TodoItemComponent({
   item,
@@ -197,50 +105,20 @@ function TodoItemComponent({
 }
 
 export function TodosWindow() {
-  const [todos, setTodos] = useState(() => parseTodos(sampleMarkdown));
+  const [todos, setTodos] = useState(() => parseTodos(sampleTodoMarkdown));
   const [collapsedTodos, setCollapsedTodos] = useState<Set<string>>(() => {
-    const initialTodos = parseTodos(sampleMarkdown);
-    const getAllTodosWithChildren = (items: TodoItem[]): string[] => {
-      return items.reduce((acc, item) => {
-        if (item.children.length > 0) {
-          acc.push(item.id);
-          acc.push(...getAllTodosWithChildren(item.children));
-        }
-        return acc;
-      }, [] as string[]);
-    };
-    return new Set(getAllTodosWithChildren(initialTodos));
+    return new Set(getAllTodoIds(parseTodos(sampleTodoMarkdown)));
   });
   const [isToolbarHovered, setIsToolbarHovered] = useState(false);
 
   const toggleTodo = useCallback((targetId: string) => {
-    const updateTodos = (items: TodoItem[]): TodoItem[] => {
-      return items.map((item) => {
-        if (item.id === targetId) {
-          return { ...item, completed: !item.completed };
-        }
-        if (item.children.length > 0) {
-          return { ...item, children: updateTodos(item.children) };
-        }
-        return item;
+    setTodos((prevTodos) => {
+      const allTodos = getAllTodos(prevTodos);
+      const targetTodo = allTodos.find((todo) => todo.id === targetId);
+      return updateTodos(prevTodos, targetId, {
+        completed: !targetTodo?.completed,
       });
-    };
-    setTodos((prevTodos) => updateTodos(prevTodos));
-  }, []);
-
-  const _resetTodos = useCallback(() => {
-    setTodos(parseTodos(sampleMarkdown));
-  }, []);
-
-  const _completeAllTodos = useCallback(() => {
-    const markAllComplete = (items: TodoItem[]): TodoItem[] => {
-      return items.map((item) => ({
-        ...item,
-        completed: true,
-        children: markAllComplete(item.children),
-      }));
-    };
-    setTodos((prevTodos) => markAllComplete(prevTodos));
+    });
   }, []);
 
   const toggleCollapse = useCallback((todoId: string) => {
@@ -260,53 +138,23 @@ export function TodosWindow() {
   }, []);
 
   const collapseAll = useCallback(() => {
-    const getAllTodoIds = (items: TodoItem[]): string[] => {
-      return items.reduce((acc, item) => {
-        if (item.children.length > 0) {
-          acc.push(item.id);
-          acc.push(...getAllTodoIds(item.children));
-        }
-        return acc;
-      }, [] as string[]);
-    };
     setCollapsedTodos(new Set(getAllTodoIds(todos)));
   }, [todos]);
 
-  const getAllTodos = (items: TodoItem[]): TodoItem[] => {
-    return items.reduce((acc, item) => {
-      acc.push(item);
-      acc.push(...getAllTodos(item.children));
-      return acc;
-    }, [] as TodoItem[]);
-  };
-
   const allTodos = getAllTodos(todos);
+  const allTodoIds = getAllTodoIds(todos);
   const completedCount = allTodos.filter((todo) => todo.completed).length;
   const totalCount = allTodos.length;
   const completionPercentage =
     totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
-
-  const getAllTodoIds = (items: TodoItem[]): string[] => {
-    return items.reduce((acc, item) => {
-      if (item.children.length > 0) {
-        acc.push(item.id);
-        acc.push(...getAllTodoIds(item.children));
-      }
-      return acc;
-    }, [] as string[]);
-  };
-
-  const allTodoIds = getAllTodoIds(todos);
   const allExpanded =
     allTodoIds.length > 0 && allTodoIds.every((id) => !collapsedTodos.has(id));
-  const _allCollapsed =
-    allTodoIds.length > 0 && allTodoIds.every((id) => collapsedTodos.has(id));
 
   return (
     <Window className="p-0">
       <WindowToolbar>
         <div
-          className="mb-1 flex h-6 items-center justify-center gap-1 transition-all duration-300 ease-out"
+          className="flex items-center justify-center gap-1 transition-all duration-300 ease-out"
           onMouseEnter={() => setIsToolbarHovered(true)}
           onMouseLeave={() => setIsToolbarHovered(false)}
         >
