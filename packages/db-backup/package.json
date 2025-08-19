@@ -1,0 +1,31 @@
+{
+  "name": "@repo/db-backup",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "backup": "bun run src/index.ts",
+    "db:push-schema": "instant-cli push schema",
+    "db:push-perms": "instant-cli push perms",
+    "lint": "biome check .",
+    "lint:fix": "biome check . --write",
+    "lint:fix:unsafe": "biome check . --unsafe --write",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@instantdb/admin": "catalog:",
+    "@instantdb/core": "catalog:",
+    "@instantdb/platform": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@repo/vitest-config": "workspace:*",
+    "@instantdb/core": "catalog:",
+    "instant-cli": "catalog:",
+    "vitest": "catalog:"
+  }
+}
