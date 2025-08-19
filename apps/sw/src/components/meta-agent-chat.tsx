@@ -10,6 +10,7 @@ import {
 } from "framer-motion";
 import { ArrowUpIcon, MessageCircle, XIcon } from "lucide-react";
 import { useState } from "react";
+import { Chat } from "./chat";
 
 export function MetaAgentChat() {
   const [isOpen, setIsOpen] = useState(false);
@@ -60,7 +61,7 @@ export function MetaAgentChat() {
           }}
           // keep it mounted so the shared element has a stable target;
           // pointer events only when open
-          className="absolute right-0 bottom-0 h-80 w-80"
+          className="absolute right-0 bottom-0 h-160 w-80"
           style={{
             willChange: "clip-path",
             pointerEvents: isOpen ? "auto" : "none",
@@ -88,7 +89,7 @@ export function MetaAgentChat() {
                 />
               </Button>
             </div>
-            <div className="flex-1" />
+            <Chat />
             <div className="p-2">
               <div className="relative flex gap-2">
                 <Input

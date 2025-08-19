@@ -2,7 +2,6 @@ import "./globals.css";
 import { cn } from "@repo/ui/lib/utils";
 import { Geist, Geist_Mono } from "next/font/google";
 import { CSSVariablesProvider } from "@/components/css-variables-provider";
-import { DynamicBackground } from "@/components/dynamic-background";
 import { MetaAgentChat } from "@/components/meta-agent-chat";
 
 const geistSans = Geist({
@@ -28,7 +27,6 @@ export default function RootLayout({
         )}
       >
         <CSSVariablesProvider />
-        <DynamicBackground />
         <main className="relative z-10">{children}</main>
         <MetaAgentChat />
       </body>

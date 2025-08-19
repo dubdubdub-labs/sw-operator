@@ -61,6 +61,7 @@
         "@repo/chat-base-sidebar": "workspace:*",
         "@repo/ui": "workspace:*",
         "ai": "catalog:",
+        "framer-motion": "^12.23.12",
         "lucide-react": "catalog:",
         "next": "catalog:",
         "react": "catalog:",

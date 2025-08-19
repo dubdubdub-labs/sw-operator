@@ -150,7 +150,7 @@ export const useDesktopStore = create<DesktopStore>()(
                 : [0, 1, 2, 3].find((pos) => !usedPositions.has(pos)) || 0;
 
             const newWindow: WindowInstance = {
-              id: `window-${Date.now()}`,
+              id: `window-${Math.random().toString(36).slice(2, 10)}`,
               type: windowType,
               position: availablePosition,
             };
