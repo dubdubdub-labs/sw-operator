@@ -19,7 +19,7 @@ const baseDb = init({
   // @ts-expect-error - __adminToken is not an official option; we're using it as a hack for our db explorer
   __adminToken: process.env.NEXT_PUBLIC_INSTANT_ADMIN_TOKEN,
   devtool: false,
-  useDateObjects: true,
+  useDateObjects: false,
 });
 
 const useRegisteredQuery = <

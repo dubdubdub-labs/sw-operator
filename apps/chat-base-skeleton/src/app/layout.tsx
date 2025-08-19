@@ -58,6 +58,7 @@ export default function RootLayout({
       ],
     },
   ];
+
   return (
     <ChatBaseRootLayout
       bodyClassName={cn(`${geistSans.variable} ${geistMono.variable}`)}
