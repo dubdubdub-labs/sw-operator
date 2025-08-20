@@ -102,7 +102,7 @@ const useRegisteredMutation = <
 };
 
 // Non-hook version for executing registered mutations
-const executeRegisteredMutation = async <
+export const executeRegisteredMutation = async <
   // biome-ignore lint/suspicious/noExplicitAny: helper type
   TMutation extends RegisteredMutation<AppSchema, any>,
 >(

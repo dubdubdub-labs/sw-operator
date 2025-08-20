@@ -1,5 +1,6 @@
 import {
   checkIsIdAttr,
+  getDataType,
   type InstantUnknownSchemaDef,
   type InstaQLLifecycleState,
   type InstaQLParams,
@@ -17,22 +18,36 @@ export const getColDefsFromAttrs = (attrs: SchemaAttr[]): ColDef[] => {
     };
 
     const isIdAttr = checkIsIdAttr(attr);
+    const isLinkedEntity = attr.type === "ref";
+
+    const dataType = getDataType({ attr });
+
+    let colTypes: string[];
+    if (isIdAttr) {
+      colTypes = [PlatformColType.default, PlatformColType.entityItemId];
+    } else if (isLinkedEntity) {
+      colTypes = [PlatformColType.default, PlatformColType.linkedEntity];
+    } else if (dataType === "string") {
+      colTypes = [PlatformColType.default, PlatformColType.text];
+    } else if (dataType === "number") {
+      colTypes = [PlatformColType.default, PlatformColType.number];
+    } else {
+      colTypes = [PlatformColType.default];
+    }
 
     return {
       field: attr.name,
       headerName: attr.name,
       width: 100,
       context,
-      editable: !isIdAttr,
-      type: isIdAttr
-        ? [PlatformColType.default, PlatformColType.entityItemId]
-        : [PlatformColType.default],
+      cellDataType: dataType,
+      editable: !(isIdAttr || isLinkedEntity),
+      type: colTypes,
     };
   });
 };
 
 export const getRowDataFromItemsRes = ({
-  attrs,
   itemsRes,
   entityId,
 }: {
@@ -59,29 +74,13 @@ export const getRowDataFromItemsRes = ({
 
   const cleanedData = entityData.map((row) => {
     const { id, ...rest } = row;
+    const rowData: EntityRow = { id };
 
     for (const [key, value] of Object.entries(rest)) {
-      console.log("key", key);
-      console.log("value", value);
-      const attr = attrs.find((a) => a.name === key);
-      const attrType = attr?.type;
-      console.log("attrType", attrType);
-      if (attrType === "ref") {
-        console.log("value", value);
-      } else if (attrType === "blob") {
-        const checkedDataType = attr?.checkedDataType;
-        console.log("checkedDataType", checkedDataType);
-        const inferredTypes = attr?.inferredTypes;
-        console.log("inferredTypes", inferredTypes);
-      }
+      rowData[key] = value;
     }
 
-    console.log("row", row);
-
-    return {
-      id,
-      // ...rest,
-    };
+    return rowData;
   });
 
   return cleanedData;

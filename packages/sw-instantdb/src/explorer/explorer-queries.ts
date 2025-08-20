@@ -7,9 +7,12 @@ import { dbAttrsToExplorerSchema, makeWhere } from "./explorer-utils";
 
 export type UseNamespacesQueryProps<
   DATABASE extends
-    | InstantReactWebDatabase<
-        InstantUnknownSchemaDef,
-        InstantConfig<InstantUnknownSchemaDef, true>
+    | Omit<
+        InstantReactWebDatabase<
+          InstantUnknownSchemaDef,
+          InstantConfig<InstantUnknownSchemaDef, true>
+        >,
+        "room" | "getAuth"
       >
     | InstantReactNativeDatabase<
         InstantUnknownSchemaDef,
@@ -28,9 +31,12 @@ export type UseNamespacesQueryProps<
 
 export function useNamespacesQuery<
   DATABASE extends
-    | InstantReactWebDatabase<
-        InstantUnknownSchemaDef,
-        InstantConfig<InstantUnknownSchemaDef, true>
+    | Omit<
+        InstantReactWebDatabase<
+          InstantUnknownSchemaDef,
+          InstantConfig<InstantUnknownSchemaDef, true>
+        >,
+        "room" | "getAuth"
       >
     | InstantReactNativeDatabase<
         InstantUnknownSchemaDef,
@@ -106,9 +112,12 @@ export function useNamespacesQuery<
 
 export const useSchemaQuery = <
   DATABASE extends
-    | InstantReactWebDatabase<
-        InstantUnknownSchemaDef,
-        InstantConfig<InstantUnknownSchemaDef, true>
+    | Omit<
+        InstantReactWebDatabase<
+          InstantUnknownSchemaDef,
+          InstantConfig<InstantUnknownSchemaDef, true>
+        >,
+        "room" | "getAuth"
       >
     | InstantReactNativeDatabase<
         InstantUnknownSchemaDef,

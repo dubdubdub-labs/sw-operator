@@ -24,11 +24,38 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarContent>
+        <AppSidebarGroup />
         <DBEntitiesSidebarGroup />
         <DBQueriesSidebarGroup />
         <MutationSidebarGroup />
       </SidebarContent>
     </Sidebar>
+  );
+}
+
+function AppSidebarGroup() {
+  return (
+    <SidebarGroup>
+      <SidebarGroupContent>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild>
+              <Link href="/schema">Schema</Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton>
+              <Link href="/perms">Permissions</Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton>
+              <Link href="/sandbox">Sandbox</Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
   );
 }
 

@@ -454,11 +454,11 @@
   },
   "catalog": {
     "@ai-sdk/react": "2.0.12",
-    "@instantdb/admin": "0.21.2",
-    "@instantdb/core": "0.21.2",
-    "@instantdb/platform": "0.21.2",
-    "@instantdb/react": "0.21.2",
-    "@instantdb/react-native": "0.21.2",
+    "@instantdb/admin": "0.21.3",
+    "@instantdb/core": "0.21.3",
+    "@instantdb/platform": "0.21.3",
+    "@instantdb/react": "0.21.3",
+    "@instantdb/react-native": "0.21.3",
     "@sentry/react": "10.3.0",
     "@tailwindcss/postcss": "4.1.11",
     "@tanstack/query-core": "5.83.1",
@@ -471,7 +471,7 @@
     "ag-grid-enterprise": "34.1.1",
     "ag-grid-react": "34.1.1",
     "ai": "5.0.11",
-    "instant-cli": "0.21.2",
+    "instant-cli": "0.21.3",
     "lucide-react": "0.539.0",
     "next": "15.4.6",
     "react": "19.1.0",
@@ -740,17 +740,17 @@
 
     "@inquirer/type": ["@inquirer/type@1.5.5", "", { "dependencies": { "mute-stream": "^1.0.0" } }, "sha512-MzICLu4yS7V8AA61sANROZ9vT1H3ooca5dSmI1FjZkzq7o/koMsRfQSzRtFo+F3Ao4Sf1C0bpLKejpKB/+j6MA=="],
 
-    "@instantdb/admin": ["@instantdb/admin@0.21.2", "", { "dependencies": { "@instantdb/core": "v0.21.2", "@instantdb/version": "v0.21.2" } }, "sha512-2DqkBjawRS8iSGsuX5FEw9wByMDvdf5xS33uQ6Uz0Gur98KAacwOw3cO+KbO87AZ84y+8JB7SpEQ4thbZE+1ag=="],
+    "@instantdb/admin": ["@instantdb/admin@0.21.3", "", { "dependencies": { "@instantdb/core": "v0.21.3", "@instantdb/version": "v0.21.3" } }, "sha512-l/gFs+75Uu8gdVjd+I54lH9RiM4GUjF5z/p+ir3Ng2Gktz06ASvU41AIMvFYk+1Wc/r+GSlt1Qy4JE1RDefi4g=="],
 
-    "@instantdb/core": ["@instantdb/core@0.21.2", "", { "dependencies": { "@instantdb/version": "v0.21.2", "mutative": "^1.0.10", "uuid": "^11.1.0" } }, "sha512-nt2/zIyZgxE8hlQfp34EdlFDimStKeWgtnA5HIgJ4BF2517wpy3yv5rzumIYcO2rpjvSBCQNiKs4MoyDXd9hpQ=="],
+    "@instantdb/core": ["@instantdb/core@0.21.3", "", { "dependencies": { "@instantdb/version": "v0.21.3", "mutative": "^1.0.10", "uuid": "^11.1.0" } }, "sha512-+8vZpw8WidJcosd1BQo76WUNjv16bgERXqzcHJmHilOJhGqUtX3GEM7n91jSXsMr1LoWI7u5xPs6MUx+PPEcOQ=="],
 
-    "@instantdb/platform": ["@instantdb/platform@0.21.2", "", { "dependencies": { "@babel/parser": "^8.0.0-beta.0", "@babel/types": "^8.0.0-beta.0", "@instantdb/core": "v0.21.2", "@instantdb/version": "v0.21.2" } }, "sha512-Vflk746GSYBqE6eG+ehmhdXb7rAzz9xg9mKCGyrfiv7FiItLEeudDzXAlRWzsEL6kevI1YcFi3kpUGFdi65BVQ=="],
+    "@instantdb/platform": ["@instantdb/platform@0.21.3", "", { "dependencies": { "@babel/parser": "^8.0.0-beta.0", "@babel/types": "^8.0.0-beta.0", "@instantdb/core": "v0.21.3", "@instantdb/version": "v0.21.3" } }, "sha512-BzB8kQlsCg7NBwmauEAFCZBkRzmf+evRKC2eF44jM+b0tTdK1lyrCz3rDZpKi6Q2it77aJ0IU9x0NiweLD6FUA=="],
 
-    "@instantdb/react": ["@instantdb/react@0.21.2", "", { "dependencies": { "@instantdb/core": "v0.21.2", "@instantdb/version": "v0.21.2" }, "peerDependencies": { "react": ">=16" } }, "sha512-TFOIs2va3/FBLFcNQ3lGSzZeWBMgmcpYIvBpApkvBg4X2wI4dhd1kTsLljTkiNfc5ijhB53ZdzBjpw8WlP0bQA=="],
+    "@instantdb/react": ["@instantdb/react@0.21.3", "", { "dependencies": { "@instantdb/core": "v0.21.3", "@instantdb/version": "v0.21.3" }, "peerDependencies": { "react": ">=16" } }, "sha512-lb+nqBI6NqwgpSUZtKJjrlMjJhijZqIJqk9EPC6AoqUhalByboSlWYCsofWlnmVJfgb0Pt1ZW0RoSQwtPKC+ow=="],
 
-    "@instantdb/react-native": ["@instantdb/react-native@0.21.2", "", { "dependencies": { "@instantdb/core": "v0.21.2", "@instantdb/react": "v0.21.2", "@instantdb/version": "v0.21.2" }, "peerDependencies": { "@react-native-async-storage/async-storage": ">=1.15", "@react-native-community/netinfo": ">=7.1", "react": ">=16", "react-native": ">=0.56", "react-native-get-random-values": ">=1.5" } }, "sha512-5G6xR0zWx1tsA86mIDcL+IKI9NzK+QSpusun9XJv07mx7oJ/v+z/IEt5UFwYGrHnoouSCEb7eytxfS1mxfyp7w=="],
+    "@instantdb/react-native": ["@instantdb/react-native@0.21.3", "", { "dependencies": { "@instantdb/core": "v0.21.3", "@instantdb/react": "v0.21.3", "@instantdb/version": "v0.21.3" }, "peerDependencies": { "@react-native-async-storage/async-storage": ">=1.15", "@react-native-community/netinfo": ">=7.1", "react": ">=16", "react-native": ">=0.56", "react-native-get-random-values": ">=1.5" } }, "sha512-fbfK/QlPQWQVEDUp4GoP0HNuRVJv/m58Tc4jb2KUTI4RRwri1SWA2opHgl5CtpDqSFuWameYSy9k0Qnv5UcjHg=="],
 
-    "@instantdb/version": ["@instantdb/version@0.21.2", "", {}, "sha512-aZ3VySW7R6R0k9ZO0N6KT/fWbgaowWNv1Vclg8gO/N6Tk3Q7/W0dCJnpS5G62lYJjwa1lVlqX66IofqM51g/0w=="],
+    "@instantdb/version": ["@instantdb/version@0.21.3", "", {}, "sha512-Alf3t8uTQzN7KhO4Es7ktCICOjJ1LpLmokhiBpWmTb/UGy6ahlaZGtH+VGOzop1RJM0PlGiNoThQqtMMorpvww=="],
 
     "@isaacs/fs-minipass": ["@isaacs/fs-minipass@4.0.1", "", { "dependencies": { "minipass": "^7.0.4" } }, "sha512-wgm9Ehl2jpeqP3zw/7mo3kRHFp5MEDhqAdwy1fTGkHAwnkGOVsgpvQhL8B5n1qlb01jV3n/bI0ZfZp5lWA1k4w=="],
 
@@ -1704,7 +1704,7 @@
 
     "inquirer": ["inquirer@10.2.2", "", { "dependencies": { "@inquirer/core": "^9.1.0", "@inquirer/prompts": "^5.5.0", "@inquirer/type": "^1.5.3", "@types/mute-stream": "^0.0.4", "ansi-escapes": "^4.3.2", "mute-stream": "^1.0.0", "run-async": "^3.0.0", "rxjs": "^7.8.1" } }, "sha512-tyao/4Vo36XnUItZ7DnUXX4f1jVao2mSrleV/5IPtW/XAEA26hRVsbc68nuTEKWcr5vMP/1mVoT2O7u8H4v1Vg=="],
 
-    "instant-cli": ["instant-cli@0.21.2", "", { "dependencies": { "@inquirer/core": "9.0.10", "@inquirer/prompts": "5.3.8", "@instantdb/platform": "v0.21.2", "@instantdb/version": "v0.21.2", "ansi-escapes": "4.3.2", "chalk": "^5.3.0", "commander": "^12.1.0", "dotenv": "^16.3.1", "dotenv-flow": "^4.1.0", "env-paths": "^3.0.0", "inquirer": "^10.1.6", "json-diff": "^1.0.6", "open": "^10.1.0", "ora": "^8.1.1", "pkg-dir": "^8.0.0", "prettier": "^3.3.3", "semver": "7.7.2", "terminal-link": "^3.0.0", "unconfig": "^0.5.5" }, "bin": { "instant-cli": "bin/index.js" } }, "sha512-WLNCcSzZY8JI3HW6XjDftFhySJQ8rgwPNsBIl2b0JVtsM1i6qX2G8lAoXdDM/P0IDQNjwbhGRjgtWchDE4w/lA=="],
+    "instant-cli": ["instant-cli@0.21.3", "", { "dependencies": { "@inquirer/core": "9.0.10", "@inquirer/prompts": "5.3.8", "@instantdb/platform": "v0.21.3", "@instantdb/version": "v0.21.3", "ansi-escapes": "4.3.2", "chalk": "^5.3.0", "commander": "^12.1.0", "dotenv": "^16.3.1", "dotenv-flow": "^4.1.0", "env-paths": "^3.0.0", "inquirer": "^10.1.6", "json-diff": "^1.0.6", "open": "^10.1.0", "ora": "^8.1.1", "pkg-dir": "^8.0.0", "prettier": "^3.3.3", "semver": "7.7.2", "terminal-link": "^3.0.0", "unconfig": "^0.5.5" }, "bin": { "instant-cli": "bin/index.js" } }, "sha512-dv9/3BJMSu+xsTy6WCt7dfqsjMibCrKda4JawYPCy77j1+SyPZW7uHaRwmwh+M83jDxQxBINmNQ/+wu3zzQ/wQ=="],
 
     "internmap": ["internmap@2.0.3", "", {}, "sha512-5Hh7Y1wQbvY5ooGgPbDaL5iYLAPzMTUrjMulskHLH6wnv/A+1q5rgEaiuqEjB+oxGXIVZs1FF+R/KPN3ZSQYYg=="],
 

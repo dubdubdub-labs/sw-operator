@@ -181,3 +181,9 @@ export function checkIsUniqAttr(attr: SchemaAttr) {
 export function checkIsRequiredAttr(attr: SchemaAttr) {
   return attr.isRequired;
 }
+
+export function getDataType({ attr }: { attr: SchemaAttr }) {
+  return attr.type === "ref"
+    ? "link"
+    : (attr.checkedDataType ?? attr.inferredTypes?.[0] ?? "unknown");
+}

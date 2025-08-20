@@ -3,9 +3,22 @@ import {
   checkIsIndexedAttr,
   checkIsRequiredAttr,
   checkIsUniqAttr,
+  getDataType,
+  type SchemaAttr,
 } from "@repo/sw-instantdb";
 import type { CustomHeaderProps } from "ag-grid-react";
-import { AsteriskIcon, SearchIcon, SignatureIcon } from "lucide-react";
+import {
+  ArrowUpRightIcon,
+  AsteriskIcon,
+  BracesIcon,
+  CalendarIcon,
+  CheckIcon,
+  HashIcon,
+  SearchIcon,
+  ShieldQuestionMarkIcon,
+  SignatureIcon,
+  TextIcon,
+} from "lucide-react";
 import type { EntityPageColDefContext } from "./entity-page-contexts";
 
 export function DefaultHeader(params: CustomHeaderProps) {
@@ -28,6 +41,9 @@ export function DefaultHeader(params: CustomHeaderProps) {
         {isIndexedAttr && <SearchIcon />}
         {isUniqAttr && <SignatureIcon />}
         {isRequiredAttr && <AsteriskIcon />}
+        {colDefContext?.attr && (
+          <DataTypeIcon schemaAttr={colDefContext.attr} />
+        )}
       </div>
     </div>
   );
@@ -45,4 +61,24 @@ export function IdHeader(params: CustomHeaderProps) {
   return (
     <div className="flex h-full items-center gap-1 px-2 py-2 text-xs">ID</div>
   );
+}
+
+function DataTypeIcon({ schemaAttr }: { schemaAttr: SchemaAttr }) {
+  const dataType = getDataType({ attr: schemaAttr });
+  switch (dataType) {
+    case "string":
+      return <TextIcon />;
+    case "number":
+      return <HashIcon />;
+    case "boolean":
+      return <CheckIcon />;
+    case "date":
+      return <CalendarIcon />;
+    case "json":
+      return <BracesIcon />;
+    case "link":
+      return <ArrowUpRightIcon />;
+    default:
+      return <ShieldQuestionMarkIcon />;
+  }
 }

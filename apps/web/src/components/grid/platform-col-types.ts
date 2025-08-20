@@ -1,7 +1,15 @@
-import { db } from "@repo/db-core/client";
+import { dangerousUnsafeDb, db } from "@repo/db-core/client";
 import type { ColTypeDef } from "ag-grid-enterprise";
-import { DefaultCellEditor } from "./default-cell-editor";
-import { DefaultCellRenderer, IdCellRenderer } from "./default-cell-renderer";
+import {
+  DefaultCellEditor,
+  NumberCellEditor,
+  TextCellEditor,
+} from "./default-cell-editor";
+import {
+  DefaultCellRenderer,
+  IdCellRenderer,
+  LinkedEntityCellRenderer,
+} from "./default-cell-renderer";
 import { DefaultHeader, IdHeader } from "./default-header";
 import type {
   EntityPageColDefContext,
@@ -11,6 +19,9 @@ import type {
 export const PlatformColType = {
   default: "DEFAULT",
   entityItemId: "ENTITY_ITEM_ID",
+  linkedEntity: "LINKED_ENTITY",
+  text: "TEXT",
+  number: "NUMBER",
 } as const;
 
 export type PlatformColType =
@@ -29,7 +40,7 @@ export const platformColTypes = {
       const rowId = params.node?.id;
 
       if (rowId && gridContext && colDefContext) {
-        db.executeRegisteredMutation(
+        dangerousUnsafeDb.executeRegisteredMutation(
           db.registeredMutations.explorer.editCellValue,
           {
             entityName: gridContext.entityId,
@@ -46,5 +57,16 @@ export const platformColTypes = {
     cellRenderer: IdCellRenderer,
     headerComponent: IdHeader,
     editable: false,
+  },
+  [PlatformColType.linkedEntity]: {
+    cellRenderer: LinkedEntityCellRenderer,
+    headerComponent: DefaultHeader,
+    editable: false,
+  },
+  [PlatformColType.text]: {
+    cellEditor: TextCellEditor,
+  },
+  [PlatformColType.number]: {
+    cellEditor: NumberCellEditor,
   },
 } as const satisfies Record<PlatformColType, ColTypeDef>;

@@ -5,10 +5,12 @@ import { useCurrentNamespace } from "@repo/hooks";
 import { use } from "react";
 import { Grid } from "@/components/grid";
 import type { EntityPageGridContext } from "@/components/grid/entity-page-contexts";
+import { GridFooter } from "@/components/grid/grid-footer";
 import {
   getColDefsFromAttrs,
   getRowDataFromItemsRes,
 } from "@/components/grid/utils";
+import { useExplorerStore } from "@/stores/explorer-store";
 import type { EntityPageParams } from "./params";
 
 export default function EntityPage({
@@ -18,9 +20,16 @@ export default function EntityPage({
 }) {
   const { entityId: encodedEntityId } = use(params);
   const entityId = decodeURIComponent(encodedEntityId);
+
+  const { getCurrentPage, getRowsPerPage } = useExplorerStore();
+  const currentPage = getCurrentPage(entityId);
+  const rowsPerPage = getRowsPerPage(entityId);
+
   const { itemsRes, namespace } = useCurrentNamespace({
     db: dangerousUnsafeDb,
     entityId,
+    limit: rowsPerPage,
+    offset: currentPage * rowsPerPage,
   });
 
   const colDefs = getColDefsFromAttrs(namespace?.attrs ?? []);
@@ -29,11 +38,6 @@ export default function EntityPage({
     entityId,
   };
 
-  console.log("itemsRes", itemsRes);
-  console.log("colDefs", namespace?.attrs);
-  console.log("namespace", namespace);
-  console.log("data", itemsRes.data);
-
   const rowData = getRowDataFromItemsRes({
     attrs: namespace?.attrs ?? [],
     itemsRes,
@@ -41,8 +45,9 @@ export default function EntityPage({
   });
 
   return (
-    <div className="flex h-full w-full">
+    <div className="flex h-[calc(100vh-3rem)] w-full flex-col">
       <Grid colDefs={colDefs} context={context} rowData={rowData} />
+      <GridFooter />
     </div>
   );
 }
