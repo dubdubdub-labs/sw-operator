@@ -235,6 +235,13 @@
         "@repo/typescript-config": "workspace:*",
       },
     },
+    "packages/context-engine": {
+      "name": "@repo/context-engine",
+      "version": "0.0.0",
+      "devDependencies": {
+        "@repo/typescript-config": "workspace:*",
+      },
+    },
     "packages/db-backup": {
       "name": "@repo/db-backup",
       "version": "0.0.0",
@@ -965,6 +972,8 @@
     "@repo/chat-base-store": ["@repo/chat-base-store@workspace:packages/chat-base-store"],
 
     "@repo/chat-base-trpc": ["@repo/chat-base-trpc@workspace:packages/chat-base-trpc"],
+
+    "@repo/context-engine": ["@repo/context-engine@workspace:packages/context-engine"],
 
     "@repo/db-backup": ["@repo/db-backup@workspace:packages/db-backup"],
 
