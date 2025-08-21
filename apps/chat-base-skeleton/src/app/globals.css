@@ -1,7 +1,0 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "@repo/ui/globals.css";
-
-@source "../../../../packages/chat-base-root-layout/src/**/*.{ts,tsx}";
-@source "../../../../packages/chat-base-sidebar/src/**/*.{ts,tsx}";
-@source "../../../../packages/chat-base-conversation/src/**/*.{ts,tsx}";
