@@ -57,6 +57,7 @@
       "tw-animate-css": "1.3.6",
       "@sentry/react": "10.3.0",
       "sonner": "2.0.7",
+      "typescript": "5.8.2",
       "vitest": "3.2.4",
       "zod": "4.0.17",
       "zustand": "5.0.7"

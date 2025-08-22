@@ -3,7 +3,10 @@
 ## Project Structure
 
 ## Rules and Regulations
-- Use bun (and bunx), do not use npm/pnpm/yarn unless absolutely necessary.
+- Use bun (and bunx), do not use npm/pnpm/yarn unless absolutely necessary. We should use catalog where possible.
+- Packages should be named with the `@repo/` prefix in their package.json. 
+- Feel free to use the logger package for logging. 
+- Write strong errors and good error classes.
 
 ## Linting and Typechecking
 We use Ultracite, a preset for Biome's lightning fast formatter and linter, which enforces strict type safety, accessibility standards, and consistent code quality for TypeScript projects.
@@ -12,6 +15,7 @@ We use Ultracite, a preset for Biome's lightning fast formatter and linter, whic
 1. Analyze existing patterns in the codebase
 2. Consider edge cases and error scenarios
 3. Follow the rules below strictly
+
 
 ### Biome / Ultracite Linting Rules
 
