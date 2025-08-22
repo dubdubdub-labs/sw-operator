@@ -31,15 +31,13 @@ export const calculateDelay = (
 };
 
 export const isRetryableError = (error: unknown): boolean => {
-  if (error instanceof Error) {
-    // Network errors are typically retryable
-    if (
-      error.message.includes("ECONNREFUSED") ||
+  if (
+    error instanceof Error &&
+    (error.message.includes("ECONNREFUSED") ||
       error.message.includes("ETIMEDOUT") ||
-      error.message.includes("ENOTFOUND")
-    ) {
-      return true;
-    }
+      error.message.includes("ENOTFOUND"))
+  ) {
+    return true;
   }
 
   // Check for retryable HTTP status codes

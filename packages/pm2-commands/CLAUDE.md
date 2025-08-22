@@ -23,8 +23,11 @@ const executor = {
 
 const pm2 = new PM2Client(executor);
 
-// Start process
-await pm2.start("node server.js", { name: "api" });
+// Start a script file
+await pm2.start("/path/to/server.js", { name: "api" });
+
+// Start a shell command (automatically detects and handles)
+await pm2.start("sleep 100", { name: "sleeper" });
 
 // List processes
 const processes = await pm2.list();
@@ -38,11 +41,24 @@ await pm2.stop("api");
 ### Process Control
 
 ```typescript
-// Start process/script
+// Start script files (Node.js, Python, etc.)
+await pm2.start("/path/to/script.js", { name: "app" });
+await pm2.start("/app/server.py", { 
+  name: "python-app",
+  interpreter: "python3"
+});
+
+// Start shell commands (automatically handled)
 await pm2.start("sleep 100", { name: "sleeper" });
-await pm2.start("/path/to/script.js", { 
-  script: "/path/to/script.js",
-  name: "app"
+await pm2.start("npm run dev", { 
+  name: "dev-server",
+  cwd: "/app"
+});
+
+// Complex shell commands with environment variables
+await pm2.start("CLOUD_CODE_ITERATION_ID=abc123 doppler run -- app", {
+  name: "cloud-app",
+  autorestart: false
 });
 
 // Control commands
@@ -138,13 +154,26 @@ await pm2.unstartup();
 ### Batch Start
 
 ```typescript
+import { createShellConfig, createNodeConfig, createCronConfig } from "@repo/pm2";
+
 const apps: PM2Config[] = [
-  { script: "api.js", name: "api", instances: 2 },
-  { script: "worker.js", name: "worker", env: { QUEUE: "jobs" } },
-  { script: "cron.js", name: "cron", cronRestart: "*/5 * * * *" }
+  createNodeConfig("/app/api.js", { name: "api", instances: 2 }),
+  createNodeConfig("/app/worker.js", { name: "worker", env: { QUEUE: "jobs" } }),
+  createCronConfig("/app/cron.js", "*/5 * * * *", { name: "cron" }),
+  // Shell commands need special handling
+  createShellConfig("npm run watch", { name: "watcher", cwd: "/app" })
 ];
 
-await pm2.startMany(apps);
+// For shell commands, pass the command as first arg, not in config.script
+for (const app of apps) {
+  if (app.script) {
+    await pm2.start(app.script, app);
+  } else {
+    // Shell command - passed as first argument
+    const command = apps.find(a => a.name === app.name);
+    await pm2.start("npm run watch", app);  // Command goes first
+  }
+}
 ```
 
 ## Command Executor
@@ -209,21 +238,32 @@ interface PM2ProcessInfo {
 PM2Client generates commands compatible with PM2 CLI:
 
 ```typescript
-// Inline commands wrapped in quotes
-pm2 start 'sleep 100' --name "sleeper"
+// Shell commands are executed through bash (PM2 doesn't support quoted commands directly)
+pm2 start bash --name "sleeper" --no-autorestart -- -c "sleep 100"
 
-// Script files with arguments
+// Script files are passed directly
 pm2 start /app/server.js --name "api" -- --port 3000
 
 // Environment variables
-pm2 start app.js --env NODE_ENV=production --env PORT=3000
+pm2 start app.js --env NODE_ENV=production,PORT=3000
 
-// Cluster mode
+// Cluster mode (Node.js only)
 pm2 start server.js -i 4 --name "cluster"
 
-// Complex commands preserved
-pm2 start 'VARS=true doppler run -- app' --no-autorestart
+// Complex commands with environment variables
+pm2 start bash --name "cloud-app" --no-autorestart -- -c "VARS=true doppler run -- app"
 ```
+
+### Important Notes
+
+1. **Shell Commands vs Script Files**: PM2 treats these differently. Shell commands are executed through bash with the command as an argument to -c, while script files can be passed directly.
+
+2. **Command Detection**: The client automatically detects whether you're passing a shell command or script file based on:
+   - File extensions (.js, .ts, .py, .sh)
+   - Absolute paths (starting with /)
+   - Everything else is treated as a shell command
+
+3. **No Config Files Required**: Despite what some documentation might suggest, PM2 can run commands directly without ecosystem files or config files.
 
 ## Error Handling
 

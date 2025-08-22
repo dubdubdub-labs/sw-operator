@@ -3,7 +3,6 @@ import type {
   ExecResponse,
   InstanceModel,
   InstanceModelCollection,
-  InstanceSshKey,
 } from "../types/models.js";
 import type {
   BootInstanceRequest,
@@ -19,7 +18,6 @@ import {
   ExecResponseSchema,
   ExposeHttpServiceSchema,
   InstanceSchema,
-  InstanceSshKeySchema,
   UpdateTTLSchema,
   UpdateWakeSchema,
 } from "../types/schemas.js";
@@ -154,63 +152,7 @@ export class InstanceService extends BaseService {
     return this.client.validateResponse(response, ExecResponseSchema);
   }
 
-  async *execStream(
-    instanceId: string,
-    command: string[]
-  ): AsyncGenerator<ExecStreamEvent> {
-    const validatedCommand = ExecCommandSchema.parse({ command });
-
-    // SSE endpoint for streaming
-    const url = this.client["urlBuilder"].build(
-      `/instance/${instanceId}/exec/sse`
-    );
-
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${this.client["apiKey"]}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(validatedCommand),
-    });
-
-    if (!(response.ok && response.body)) {
-      throw new Error(`Failed to stream exec: ${response.statusText}`);
-    }
-
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = "";
-
-    try {
-      while (true) {
-        const { done, value } = await reader.read();
-
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n");
-        buffer = lines.pop() ?? "";
-
-        for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            const data = line.slice(6);
-            if (data === "[DONE]") {
-              return;
-            }
-            try {
-              const event = JSON.parse(data) as ExecStreamEvent;
-              yield event;
-            } catch (e) {
-              this.logger.warn("Failed to parse SSE event", { data, error: e });
-            }
-          }
-        }
-      }
-    } finally {
-      reader.releaseLock();
-    }
-  }
+  // execStream removed - use exec instead for command execution
 
   async exposeHttp(
     instanceId: string,
@@ -303,21 +245,5 @@ export class InstanceService extends BaseService {
     return this.client.validateResponse(response, InstanceSchema);
   }
 
-  async getSshKey(instanceId: string): Promise<InstanceSshKey> {
-    const response = await this.client.request<InstanceSshKey>({
-      method: "GET",
-      path: `/instance/${instanceId}/ssh/key`,
-    });
-
-    return this.client.validateResponse(response, InstanceSshKeySchema);
-  }
-
-  async rotateSshKey(instanceId: string): Promise<InstanceSshKey> {
-    const response = await this.client.request<InstanceSshKey>({
-      method: "POST",
-      path: `/instance/${instanceId}/ssh/key`,
-    });
-
-    return this.client.validateResponse(response, InstanceSshKeySchema);
-  }
+  // SSH operations removed - not supported in current implementation
 }

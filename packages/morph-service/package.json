@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@repo/logger": "workspace:*",
-    "@repo/pm2": "workspace:*",
+    "@repo/pm2-commands": "workspace:*",
     "zod": "catalog:"
   },
   "scripts": {
@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "@types/node": "catalog:",
+    "@repo/typescript-config": "workspace:*",
     "vitest": "catalog:",
     "typescript": "catalog:"
   }

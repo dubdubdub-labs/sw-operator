@@ -24,8 +24,14 @@ const instance = await morph.instances.boot("snapshot_id", {
   ttl_action: "stop"
 });
 
-// Execute commands
+// Execute commands - pass as array of arguments
 const result = await morph.instances.exec(instance.id, ["echo", "Hello"]);
+
+// Start a PM2 process
+await morph.pm2.start(instance.id, "npm", {
+  name: "dev-server",
+  args: ["run", "dev"]
+});
 
 // Stop instance
 await morph.instances.stop(instance.id);
@@ -46,8 +52,9 @@ await morph.instances.get(instanceId);
 // List instances
 await morph.instances.list(filters);
 
-// Execute command
-await morph.instances.exec(instanceId, ["command", "args"]);
+// Execute command - arguments passed as array elements
+await morph.instances.exec(instanceId, ["command", "arg1", "arg2"]);
+// Note: Each array element becomes a separate argument to the command
 
 // Execute streaming (SSE)
 const stream = await morph.instances.execStream(instanceId, ["command"]);
@@ -121,35 +128,67 @@ await morph.files.deleteDirectory(instanceId, path);
 Process lifecycle control via PM2.
 
 ```typescript
-// Start process
-await morph.pm2.start(instanceId, "sleep 100", {
-  name: "my-process",
-  env: { PORT: "3000" },
-  autorestart: false
+// Start executable with arguments
+await morph.pm2.start(instanceId, "sleep", {
+  name: "sleeper",
+  args: "30"  // Arguments to pass to the executable
+});
+
+// Start npm/bun/yarn scripts
+await morph.pm2.start(instanceId, "npm", {
+  name: "dev-server",
+  args: ["run", "dev"],
+  cwd: "/app"
+});
+
+// Start script files directly
+await morph.pm2.start(instanceId, "/app/server.js", {
+  name: "api-server",
+  env: { PORT: "3000" }
+});
+
+// For complex shell commands, use bash explicitly
+await morph.pm2.start(instanceId, "bash", {
+  name: "complex-task",
+  args: ["-c", "echo 'Starting' && node app.js"]
 });
 
 // Process control
-await morph.pm2.stop(instanceId, "my-process");
-await morph.pm2.restart(instanceId, "my-process");
-await morph.pm2.delete(instanceId, "my-process");
+await morph.pm2.stop(instanceId, "api-server");
+await morph.pm2.restart(instanceId, "api-server");
+await morph.pm2.delete(instanceId, "api-server");
 
-// List processes
+// List all processes
 const processes = await morph.pm2.list(instanceId);
 
-// Get logs
-const logs = await morph.pm2.logs(instanceId, "my-process", 50);
+// Get process logs (last N lines)
+const logs = await morph.pm2.logs(instanceId, "api-server", 50);
 
-// Builder pattern
+// Builder pattern for complex configurations
 const config = morph.pm2
-  .createProcess("app")
-  .script("/app/server.js")
-  .env({ NODE_ENV: "production" })
+  .createProcess("worker")
+  .script("/app/worker.js")
+  .env({ NODE_ENV: "production", WORKERS: "4" })
   .instances(4)
   .maxMemory("1G")
+  .autorestart(true)
   .build();
 
 await morph.pm2.start(instanceId, config.script, config);
 ```
+
+#### PM2 Command Patterns
+
+PM2 treats the first argument as the executable/script to run:
+
+| Pattern | Example | Result |
+|---------|---------|--------|
+| Direct executable | `pm2.start("sleep", {args: "30"})` | Runs `/usr/bin/sleep 30` |
+| Package manager | `pm2.start("npm", {args: ["run", "dev"]})` | Runs `npm run dev` |
+| Script file | `pm2.start("/app/server.js")` | Executes the JS file |
+| Shell script | `pm2.start("/scripts/deploy.sh")` | Executes the shell script |
+
+**Note**: Complex shell syntax (pipes, redirects, loops) should be written to script files or executed via `bash -c`.
 
 ## Configuration
 
@@ -244,11 +283,21 @@ interface PM2ProcessInfo {
 
 Requires `MORPH_API_KEY` environment variable or pass directly to client.
 
-## Notes
+## Important Notes
 
+### Instance Management
 - Instance IDs format: `morphvm_[random]`
 - Snapshot IDs format: `snapshot_[random]`
 - Default timeout: 2 minutes
 - Automatic retry with exponential backoff
-- SSE streaming for long-running commands
-- PM2 daemon spawns on first use per instance
+
+### Command Execution
+- Commands are passed as arrays: `["command", "arg1", "arg2"]`
+- Each array element becomes a separate argument
+- Complex shell commands should use script files or explicit bash
+
+### PM2 Integration
+- PM2 daemon spawns automatically on first use
+- Processes persist across command sessions
+- Use `pm2.deleteAll()` to clean up before instance shutdown
+- Arguments must be passed via `args` config option, not in the command string

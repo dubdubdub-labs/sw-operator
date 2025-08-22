@@ -2,11 +2,138 @@
 
 ## Project Structure
 
+This is a Turborepo monorepo with the following structure:
+- `/apps/*` - Application packages  
+- `/packages/*` - Shared libraries and utilities
+- Root configuration files shared across all packages
+
+## Monorepo Package Guidelines
+
+### Package Structure
+Every package should follow this structure:
+```
+packages/[package-name]/
+├── src/                # Source files
+├── dist/               # Build output (gitignored)
+├── package.json        # Package manifest
+├── tsconfig.json       # TypeScript config
+├── CLAUDE.md          # Package-specific docs (for complex packages only)
+└── vitest.config.ts   # Test config (if tests exist)
+```
+
+### Package.json Configuration
+
+#### Naming Convention
+- Always use `@repo/` prefix for internal packages: `"name": "@repo/package-name"`
+
+#### Type Module
+- All packages must be ESM: `"type": "module"`
+
+#### Exports
+- Define proper exports with types first:
+```json
+"exports": {
+  ".": {
+    "types": "./dist/index.d.ts",
+    "import": "./dist/index.js"
+  }
+}
+```
+
+#### Scripts Convention
+Every package should have these standard scripts:
+```json
+"scripts": {
+  "build": "tsc",
+  "dev": "tsc --watch",
+  "test": "vitest",
+  "lint": "biome check .",
+  "lint:fix": "biome check --fix .",
+  "typecheck": "tsc --noEmit"
+}
+```
+- Add `"clean": "rm -rf dist"` for packages with build artifacts
+- Keep scripts consistent across all packages for Turbo orchestration
+
+#### Dependencies
+- Use `catalog:` for shared dependencies from root package.json catalog
+- Use `workspace:*` for internal package dependencies
+- Examples:
+```json
+"dependencies": {
+  "@repo/logger": "workspace:*",
+  "zod": "catalog:"
+},
+"devDependencies": {
+  "@types/node": "catalog:",
+  "@repo/typescript-config": "workspace:*",
+  "typescript": "catalog:",
+  "vitest": "catalog:"
+}
+```
+
+### TypeScript Configuration
+
+All packages should extend the base configuration:
+```json
+{
+  "extends": "@repo/typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}
+```
+
+Override specific compiler options only when necessary. The base config provides:
+- ESNext module system with bundler resolution
+- Strict type checking
+- ES2022 target
+- Source maps and declarations
+
+### Vitest Configuration
+
+When tests exist, create a `vitest.config.ts` extending the base:
+```typescript
+import { defineConfig } from 'vitest/config';
+import baseConfig from '@repo/vitest-config/base';
+
+export default defineConfig({
+  ...baseConfig,
+  // Package-specific overrides if needed
+});
+```
+
+### Package-Specific CLAUDE.md
+
+Create a CLAUDE.md in the package directory **only for complex packages** with:
+- Non-obvious architecture or patterns
+- Complex API surfaces
+- Special setup requirements
+- Important usage examples
+- Known limitations or gotchas
+
+Keep it concise and practical. Don't create documentation for simple utility packages.
+
+### Error Handling
+- Create dedicated error classes extending base errors
+- Export errors from a central `errors/` directory
+- Use descriptive error names and messages
+- Include error codes for programmatic handling
+
 ## Rules and Regulations
-- Use bun (and bunx), do not use npm/pnpm/yarn unless absolutely necessary. We should use catalog where possible.
-- Packages should be named with the `@repo/` prefix in their package.json. 
-- Feel free to use the logger package for logging. 
-- Write strong errors and good error classes.
+- Use bun (and bunx), do not use npm/pnpm/yarn unless absolutely necessary
+- Use catalog where possible for dependency management
+- Packages should be named with the `@repo/` prefix in their package.json
+- Feel free to use the logger package for logging
+- Write strong errors and good error classes
+- All packages must be ESM modules
+- Follow the standard script conventions for Turbo orchestration
+- Extend base configs instead of duplicating configuration
 
 ## Linting and Typechecking
 We use Ultracite, a preset for Biome's lightning fast formatter and linter, which enforces strict type safety, accessibility standards, and consistent code quality for TypeScript projects.

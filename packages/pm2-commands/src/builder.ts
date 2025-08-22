@@ -17,6 +17,16 @@ export class PM2ProcessBuilder {
     return this;
   }
 
+  interpreter(interpreter: string): this {
+    this.config.interpreter = interpreter;
+    return this;
+  }
+
+  interpreterArgs(args: string | string[]): this {
+    this.config.interpreterArgs = args;
+    return this;
+  }
+
   env(env: Record<string, string>): this {
     this.config.env = env;
     return this;
@@ -44,6 +54,11 @@ export class PM2ProcessBuilder {
 
   cron(pattern: string): this {
     this.config.cronRestart = pattern;
+    return this;
+  }
+
+  autorestart(enabled: boolean): this {
+    this.config.autorestart = enabled;
     return this;
   }
 

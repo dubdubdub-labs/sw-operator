@@ -1,11 +1,15 @@
+// Regex to remove trailing slash
+const TRAILING_SLASH = /\/$/;
+
 export class URLBuilder {
   private baseUrl: string;
 
   constructor(baseUrl: string) {
     // Remove trailing slash if present
-    this.baseUrl = baseUrl.replace(/\/$/, "");
+    this.baseUrl = baseUrl.replace(TRAILING_SLASH, "");
   }
 
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Need to handle various parameter types for URL building
   build(path: string, params?: Record<string, unknown>): string {
     // Ensure path starts with /
     const normalizedPath = path.startsWith("/") ? path : `/${path}`;

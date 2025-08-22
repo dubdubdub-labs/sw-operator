@@ -61,6 +61,7 @@ export class MorphClient {
     this.logger = config.logger ?? createLogger({ prefix: "MorphClient" });
   }
 
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Retry logic requires complex error handling
   async request<T>(options: RequestOptions): Promise<T> {
     const {
       method,
@@ -94,6 +95,7 @@ export class MorphClient {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), timeout);
 
+        // biome-ignore lint/nursery/noAwaitInLoop: Retry logic requires sequential attempts
         const response = await fetch(url, {
           method,
           headers: requestHeaders,
@@ -188,6 +190,7 @@ export class MorphClient {
     }
   }
 
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Need to handle various error response formats
   private extractErrorMessage(errorData: unknown): string {
     if (typeof errorData === "string") {
       return errorData;

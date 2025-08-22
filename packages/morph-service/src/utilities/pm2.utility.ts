@@ -1,38 +1,45 @@
 import type { Logger } from "@repo/logger";
 import {
-  PM2Client,
-  PM2ProcessBuilder,
   type CommandExecutor,
+  PM2Client,
   type PM2Config,
   type PM2Logs,
+  PM2ProcessBuilder,
   type PM2ProcessInfo,
-} from "@repo/pm2";
+} from "@repo/pm2-commands";
 import type { InstanceService } from "../services/instance.service.js";
 
 // Re-export types from PM2 package for backwards compatibility
-export type { PM2Config, PM2ProcessInfo } from "@repo/pm2";
-export { PM2ProcessBuilder } from "@repo/pm2";
+export type { PM2Config, PM2ProcessInfo } from "@repo/pm2-commands";
+export { PM2ProcessBuilder } from "@repo/pm2-commands";
 
 class MorphCommandExecutor implements CommandExecutor {
-  constructor(
-    private readonly instanceService: InstanceService,
-    private readonly instanceId: string
-  ) {}
+  private readonly instanceService: InstanceService;
+  private readonly instanceId: string;
 
-  async exec(command: string[]): Promise<{
+  constructor(instanceService: InstanceService, instanceId: string) {
+    this.instanceService = instanceService;
+    this.instanceId = instanceId;
+  }
+
+  exec(command: string[]): Promise<{
     stdout: string;
     stderr: string;
     exit_code: number;
   }> {
+    // Pass through directly - the command array format is correct
     return this.instanceService.exec(this.instanceId, command);
   }
 }
 
 export class PM2Utility {
-  constructor(
-    private readonly instanceService: InstanceService,
-    private readonly logger: Logger
-  ) {}
+  private readonly instanceService: InstanceService;
+  private readonly logger: Logger;
+
+  constructor(instanceService: InstanceService, logger: Logger) {
+    this.instanceService = instanceService;
+    this.logger = logger;
+  }
 
   private createClient(instanceId: string): PM2Client {
     const executor = new MorphCommandExecutor(this.instanceService, instanceId);
@@ -68,12 +75,12 @@ export class PM2Utility {
     await client.reload(nameOrId);
   }
 
-  async list(instanceId: string): Promise<PM2ProcessInfo[]> {
+  list(instanceId: string): Promise<PM2ProcessInfo[]> {
     const client = this.createClient(instanceId);
     return client.list();
   }
 
-  async describe(
+  describe(
     instanceId: string,
     nameOrId: string | number
   ): Promise<PM2ProcessInfo> {
@@ -87,10 +94,15 @@ export class PM2Utility {
     lines = 50
   ): Promise<PM2Logs> {
     const client = this.createClient(instanceId);
-    return client.logs(nameOrId, lines);
+    const logs = await client.logs(nameOrId, lines);
+    // Ensure backward compatibility - convert arrays to strings if needed
+    return {
+      out: Array.isArray(logs.out) ? logs.out.join("\n") : logs.out,
+      err: Array.isArray(logs.err) ? logs.err.join("\n") : logs.err,
+    };
   }
 
-  async monit(instanceId: string): Promise<string> {
+  monit(instanceId: string): Promise<string> {
     const client = this.createClient(instanceId);
     return client.monit();
   }
@@ -130,7 +142,7 @@ export class PM2Utility {
     await client.dump();
   }
 
-  async startup(instanceId: string, platform?: string): Promise<string> {
+  startup(instanceId: string, platform?: string): Promise<string> {
     const client = this.createClient(instanceId);
     return client.startup(platform);
   }

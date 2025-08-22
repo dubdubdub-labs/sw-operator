@@ -33,17 +33,18 @@
       "version": "0.1.0",
       "dependencies": {
         "@repo/logger": "workspace:*",
-        "@repo/pm2": "workspace:*",
+        "@repo/pm2-commands": "workspace:*",
         "zod": "catalog:",
       },
       "devDependencies": {
+        "@repo/typescript-config": "workspace:*",
         "@types/node": "catalog:",
         "typescript": "catalog:",
         "vitest": "catalog:",
       },
     },
-    "packages/pm2": {
-      "name": "@repo/pm2",
+    "packages/pm2-commands": {
+      "name": "@repo/pm2-commands",
       "version": "0.1.0",
       "dependencies": {
         "@repo/logger": "workspace:*",
@@ -434,7 +435,7 @@
 
     "@repo/morph-service": ["@repo/morph-service@workspace:packages/morph-service"],
 
-    "@repo/pm2": ["@repo/pm2@workspace:packages/pm2"],
+    "@repo/pm2-commands": ["@repo/pm2-commands@workspace:packages/pm2-commands"],
 
     "@repo/typescript-config": ["@repo/typescript-config@workspace:packages/typescript-config"],
 

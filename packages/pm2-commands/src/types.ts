@@ -55,8 +55,8 @@ export interface PM2RawProcess {
 }
 
 export interface PM2Logs {
-  out: string;
-  error: string;
+  out: string[] | string;
+  err: string[] | string;
 }
 
 export interface CommandExecutor {
