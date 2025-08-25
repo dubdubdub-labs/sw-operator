@@ -27,7 +27,7 @@ const InstantAppResponseSchema = z.object({ app: InstantAppSchema });
 export type InstantApp = z.infer<typeof InstantAppSchema>;
 
 export type InstantPlatformConfig = {
-  platformToken: string;
+  platformToken?: string;
   baseUrl?: string;
   userAgent?: string;
 };
@@ -83,7 +83,7 @@ export class InstantPlatformService {
       ""
     );
     this.headers = {
-      Authorization: `Bearer ${config.platformToken}`,
+      Authorization: `Bearer ${config.platformToken ?? process.env.INSTANT_PLATFORM_TOKEN}`,
       "Content-Type": "application/json",
       "User-Agent": config.userAgent ?? "instant-platform-service/0.1",
     };
