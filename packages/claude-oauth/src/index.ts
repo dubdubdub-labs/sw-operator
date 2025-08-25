@@ -165,3 +165,9 @@ export const anthropicHeaders = (access_token: string) => ({
 });
 
 export * as errors from "./errors";
+export {
+  createPKCEClient,
+  PKCE,
+  type PKCEConfig,
+  type TokenResponse,
+} from "./pkce";
