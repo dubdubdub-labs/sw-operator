@@ -1,14 +1,8 @@
 import { Buffer } from "node:buffer";
-export type PM2StartSpec = {
-  command: string;
-  config: {
-    name?: string;
-    args?: string[];
-    cwd?: string;
-    autorestart?: boolean;
-    env?: Record<string, string>;
-  };
-};
+import { type PM2Config, PM2ProcessBuilder } from "@repo/pm2-commands";
+
+// Export VM helpers
+export * from "./vm-helpers.js";
 
 // Utilities
 export function base64Encode(str: string): string {
@@ -52,18 +46,13 @@ export function createClaudeSyncCommand(iterationId: string): string {
   return `pm2 start bash --name claude-sync --no-autorestart -- -c '${script.replaceAll("'", "'\\''")}'`;
 }
 
-export function buildClaudeSyncPm2(iterationId: string): PM2StartSpec {
+export function buildClaudeSyncPm2(iterationId: string): PM2Config {
   const bashString = `CLOUD_CODE_ITERATION_ID=${iterationId} doppler run -- claude-sync sync`;
-  // Quote the -c string so shell treats it as one argument
-  const quoted = `"${bashString.replaceAll('"', '\\"')}"`;
-  return {
-    command: "bash",
-    config: {
-      name: "claude-sync",
-      autorestart: false,
-      args: ["-c", quoted],
-    },
-  };
+  return new PM2ProcessBuilder("claude-sync")
+    .script("bash")
+    .args(["-c", bashString])
+    .autorestart(false)
+    .build();
 }
 
 // 3) Claude Session process
@@ -98,7 +87,7 @@ export function buildClaudeSessionPm2(
   systemPrompt: string,
   resumeUuid?: string,
   model: "sonnet" | "opus" = "sonnet"
-): PM2StartSpec {
+): PM2Config {
   const encodedPrompt = base64Encode(prompt);
   const encodedSystem = base64Encode(systemPrompt);
   const resumeFlag = resumeUuid ? `-r ${resumeUuid}` : "";
@@ -109,18 +98,14 @@ export function buildClaudeSessionPm2(
     `--verbose --model ${model} ` +
     `--append-system-prompt "$(echo "${encodedSystem}" | base64 -d)"`;
 
-  const quoted = `"${inner.replaceAll('"', '\\"')}"`;
   const normalizedName = sessionName.replace(/[^a-zA-Z0-9-]/g, "-");
 
-  return {
-    command: "bash",
-    config: {
-      name: `cc-${normalizedName}`,
-      autorestart: false,
-      env: { SESSION_NAME: sessionName },
-      args: ["-c", quoted],
-    },
-  };
+  return new PM2ProcessBuilder(`cc-${normalizedName}`)
+    .script("bash")
+    .args(["-c", inner])
+    .env({ SESSION_NAME: sessionName })
+    .autorestart(false)
+    .build();
 }
 
 // 4) sw-compose dev server
@@ -128,15 +113,12 @@ export function createStartDevServerCommand(): string {
   return "pm2 start bun --name sw-compose-dev --cwd ~/operator/sw-compose -- run dev";
 }
 
-export function buildStartDevServerPm2(): PM2StartSpec {
-  return {
-    command: "bun",
-    config: {
-      name: "sw-compose-dev",
-      cwd: "~/operator/sw-compose",
-      args: ["run", "dev"],
-    },
-  };
+export function buildStartDevServerPm2(): PM2Config {
+  return new PM2ProcessBuilder("sw-compose-dev")
+    .script("bun")
+    .args(["run", "dev"])
+    .cwd("~/operator/sw-compose")
+    .build();
 }
 
 // 5) Machine info file

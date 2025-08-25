@@ -24,6 +24,7 @@
       "version": "0.1.0",
       "dependencies": {
         "@repo/pm2-commands": "workspace:*",
+        "@repo/vm-interface": "workspace:*",
       },
       "devDependencies": {
         "@repo/typescript-config": "workspace:*",
@@ -70,6 +71,7 @@
       "dependencies": {
         "@repo/logger": "workspace:*",
         "@repo/pm2-commands": "workspace:*",
+        "@repo/vm-interface": "workspace:*",
         "zod": "catalog:",
       },
       "devDependencies": {
@@ -149,6 +151,19 @@
       "devDependencies": {
         "vite-tsconfig-paths": "5.1.4",
         "vitest": "catalog:",
+      },
+    },
+    "packages/vm-interface": {
+      "name": "@repo/vm-interface",
+      "version": "0.1.0",
+      "dependencies": {
+        "@repo/logger": "workspace:*",
+        "@repo/pm2-commands": "workspace:*",
+      },
+      "devDependencies": {
+        "@repo/typescript-config": "workspace:*",
+        "@types/node": "catalog:",
+        "typescript": "catalog:",
       },
     },
   },
@@ -484,6 +499,8 @@
     "@repo/ui": ["@repo/ui@workspace:packages/ui"],
 
     "@repo/vitest-config": ["@repo/vitest-config@workspace:packages/vitest-config"],
+
+    "@repo/vm-interface": ["@repo/vm-interface@workspace:packages/vm-interface"],
 
     "@rollup/rollup-android-arm-eabi": ["@rollup/rollup-android-arm-eabi@4.46.2", "", { "os": "android", "cpu": "arm" }, "sha512-Zj3Hl6sN34xJtMv7Anwb5Gu01yujyE/cLBDB2gnHTAHaWS1Z38L7kuSG+oAh0giZMqG060f/YBStXtMH6FvPMA=="],
 

@@ -7,8 +7,11 @@ import { ExecUtility } from "./utilities/exec.utility.js";
 import { FileUtility } from "./utilities/file.utility.js";
 import { PM2Utility } from "./utilities/pm2.utility.js";
 
+export type { VMProvider } from "@repo/vm-interface";
 export type { MorphClientConfig } from "./client.js";
 export * from "./errors/index.js";
+// Export VM Provider implementation
+export { createMorphVMProvider, MorphVMProvider } from "./provider.js";
 // Export all types
 export * from "./types/index.js";
 export type { PM2Config, PM2ProcessInfo } from "./utilities/pm2.utility.js";

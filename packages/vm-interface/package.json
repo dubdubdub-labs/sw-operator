@@ -1,7 +1,6 @@
 {
-  "name": "@repo/claude-commands",
+  "name": "@repo/vm-interface",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "exports": {
     ".": {
@@ -12,20 +11,18 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "test": "vitest",
+    "clean": "rm -rf dist",
     "lint": "biome check .",
     "lint:fix": "biome check --fix .",
-    "typecheck": "tsc --noEmit",
-    "clean": "rm -rf dist"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@repo/pm2-commands": "workspace:*",
-    "@repo/vm-interface": "workspace:*"
+    "@repo/logger": "workspace:*",
+    "@repo/pm2-commands": "workspace:*"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "@types/node": "catalog:",
-    "typescript": "catalog:",
-    "vitest": "catalog:"
+    "typescript": "catalog:"
   }
 }
