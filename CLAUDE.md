@@ -7,6 +7,8 @@ This is a Turborepo monorepo with the following structure:
 - `/packages/*` - Shared libraries and utilities
 - Root configuration files shared across all packages
 
+`turbo` is installed globally.
+
 ## Monorepo Package Guidelines
 
 ### Package Structure
@@ -17,7 +19,8 @@ packages/[package-name]/
 ├── dist/               # Build output (gitignored)
 ├── package.json        # Package manifest
 ├── tsconfig.json       # TypeScript config
-├── CLAUDE.md          # Package-specific docs (for complex packages only)
+├── CLAUDE.md          # Package-specific docs
+├── AGENTS.md          # Symlinked to CLAUDE.md
 └── vitest.config.ts   # Test config (if tests exist)
 ```
 
@@ -110,14 +113,14 @@ export default defineConfig({
 
 ### Package-Specific CLAUDE.md
 
-Create a CLAUDE.md in the package directory **only for complex packages** with:
+Create a CLAUDE.md in the package directory with:
 - Non-obvious architecture or patterns
 - Complex API surfaces
 - Special setup requirements
 - Important usage examples
 - Known limitations or gotchas
 
-Keep it concise and practical. Don't create documentation for simple utility packages.
+Keep it concise and practical. **Ensure you create a symlink to AGENTS.md**
 
 ### Error Handling
 - Create dedicated error classes extending base errors

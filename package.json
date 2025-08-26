@@ -28,7 +28,8 @@
   "workspaces": {
     "packages": [
       "apps/*",
-      "packages/*"
+      "packages/*",
+      "packages/*/*"
     ],
     "catalog": {
       "@ai-sdk/react": "2.0.12",
