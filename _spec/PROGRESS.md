@@ -60,3 +60,24 @@ Entry format
   - New packages: `packages/runtime-interfaces`, `packages/logger`
   - Build: `bunx turbo build`
   - Tests: `cd packages/logger && bun run test`; `cd packages/runtime-interfaces && bun run test`
+
+## 2025-08-26T01:00:26Z — Monorepo scaffolding expanded
+- Summary: Expanded initial scaffolding across core packages and validated builds/lint/tests locally.
+- Done:
+  - Added packages: `@repo/process-shell`, `@repo/process-pm2` (skeleton), `@repo/agents-claude-cli`, `@repo/credentials`, `@repo/orchestrator`, `@repo/providers-morph` (skeleton), `@repo/claude-oauth` (skeleton).
+  - Ensured all packages follow ESM, exports, tsconfig, and scripts conventions; added CLAUDE.md + AGENTS.md symlinks.
+  - Implemented orchestrator wiring for boot → credentials → .machine.json → startSession → logs/list.
+  - Implemented default credentials installer with atomic writes and optional post-install commands.
+  - Implemented PM2 payload construction and list/logs/stop parsing to a basic level.
+  - Local builds pass with `bunx turbo build`; package-level tests pass for logger and interfaces.
+- Next:
+  - Implement Morph provider HTTP client, status mapping, exec, and atomic file I/O with zod validation.
+  - Add unit tests for PM2 manager payloads/parsing and Claude agent spec generation.
+  - Add orchestrator integration tests with fakes; prepare optional E2E smoke script wiring Morph + PM2 + Claude.
+- Decisions:
+  - Keep `@repo/providers-morph` and `@repo/claude-oauth` as explicit skeletons until Phase 2/7.
+  - Prefer per-package vitest configs for now to avoid cross-package TS config coupling.
+- Issues/Risks:
+  - Provider exec/file I/O edge cases (payload size, permissions) to be validated during Morph implementation.
+- Notes/Links:
+  - Package dirs updated under `packages/*`; see CLAUDE.md in each for quickstart and gotchas.
