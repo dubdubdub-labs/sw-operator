@@ -20,8 +20,9 @@
  */
 
 async function main() {
-  console.log("[pm2-recon] Stub placeholder. Implement once provider is wired.");
+  console.log(
+    "[pm2-recon] Stub placeholder. Implement once provider is wired."
+  );
 }
 
 void main();
-

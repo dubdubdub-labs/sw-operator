@@ -13,8 +13,9 @@
  */
 
 async function main() {
-  console.log("[file-io-smoke] Stub placeholder. Implement once provider is wired.");
+  console.log(
+    "[file-io-smoke] Stub placeholder. Implement once provider is wired."
+  );
 }
 
 void main();
-

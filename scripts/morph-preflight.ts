@@ -21,8 +21,9 @@ async function main() {
   const key = process.env.MORPH_API_KEY || "";
   const masked = key ? `${key.slice(0, 6)}...${key.slice(-4)}` : "<missing>`";
   console.log("[morph-preflight] MORPH_API_KEY:", masked);
-  console.log("[morph-preflight] Stub placeholder. Implement once provider is wired.");
+  console.log(
+    "[morph-preflight] Stub placeholder. Implement once provider is wired."
+  );
 }
 
 void main();
-

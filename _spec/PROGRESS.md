@@ -37,3 +37,26 @@ Entry format
   - Morph OpenAPI: `_reference/morph.json`
   - PM2 + Claude patterns: `_reference/pm2-claude-code.ts`
   - OAuth helper: `_reference/cc-oauth.ts`
+
+## 2025-08-26T00:48:10Z — Phase 1 scaffolding start
+- Summary: Scaffolded `@repo/runtime-interfaces` (contracts) and `@repo/logger` with tests and docs; verified build/tests via Bun.
+- Done:
+  - Created packages with ESM, exports, standard scripts, and tsconfig extending `@repo/typescript-config`.
+  - Implemented minimal logger with level filtering and child loggers; added unit test.
+  - Implemented contracts for commands, processes, provider, process manager, agent, credentials, orchestrator, and error classes; added a compile-time style test using fakes.
+  - Added CLAUDE.md for both packages and symlinked AGENTS.md.
+  - Adjusted vitest usage to local minimal config to avoid cross-package TS import friction.
+  - Verified: `bunx turbo build` succeeds; `bun run test` passes in both packages.
+- Next:
+  - Phase 2: Scaffold `@repo/providers-morph` with HTTP client skeleton, status mapping, and file IO plan; add unit tests (URL building, status mapping).
+  - Phase 3A: Add `@repo/process-shell` with a simple runner and tests.
+  - Optionally standardize test configuration import once `@repo/vitest-config` exports a JS entry.
+- Decisions:
+  - Keep vitest config local for now to avoid Node ESM importing raw TS from another package.
+  - Exclude tests from `tsc` build output to keep dist clean and avoid type friction.
+- Issues/Risks:
+  - Turbo `test` across all packages fails when some packages lack a test script; run tests per-package or add placeholder scripts later.
+- Notes/Links:
+  - New packages: `packages/runtime-interfaces`, `packages/logger`
+  - Build: `bunx turbo build`
+  - Tests: `cd packages/logger && bun run test`; `cd packages/runtime-interfaces && bun run test`
