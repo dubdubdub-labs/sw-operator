@@ -9,8 +9,8 @@
     "lint": "turbo lint",
     "lint:fix": "turbo lint:fix",
     "lint:fix:unsafe": "turbo lint:fix:unsafe",
-    "typecheck": "turbo typecheck",
-    "sync:agents": "bun scripts/sync-agents-claude.ts"
+    "test": "turbo test",
+    "typecheck": "turbo typecheck"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.4",

@@ -1,17 +1,17 @@
 # Implementation Guide (Phase-by-Phase)
 
-This guide expands ARCHITECTURE.md into a concrete, test-first plan for building each package. It focuses on goals, requirements, design choices, error models, and testing (including real E2E smoke with Morph). No production code is included here.
+This guide expands ARCHITECTURE.md into a concrete, test-first plan for building each package. It focuses on goals, requirements, design choices, error models, and testing (including real E2E smoke with CodeSandbox). No production code is included here.
 
 Use these references while implementing:
-- Morph API OpenAPI: `_reference/morph.json`
+- CodeSandbox SDK reference: `_reference/codesandbox.md` (template id: `69vrxg`)
 - PM2 + Claude Code command patterns: `_reference/pm2-claude-code.ts`
 - Anthropic OAuth helper (PKCE): `_reference/cc-oauth.ts`
 - Instant Platform helper (optional): `_reference/instant-platform.ts`
 
 General notes
 - Prefer Bun and Turborepo conventions from the repo guidelines.
-- In addition to proper unit/integration tests, feel free to write targeted test scripts to debug external services (Morph, PM2, CLI). We are using a test account — exploratory scripts are encouraged as long as they print clear diagnostics and clean up resources.
-- The `morphcloud` CLI is installed and authenticated globally in our environment. Use it for quick, manual cross-checks and to investigate error messages while developing.
+- In addition to proper unit/integration tests, feel free to write targeted test scripts to debug external services (CodeSandbox, PM2, CLI). We are using a test account — exploratory scripts are encouraged as long as they print clear diagnostics and clean up resources.
+- Use the CodeSandbox SDK (and CLI via `npx @codesandbox/sdk`) for quick, manual cross-checks and to investigate error messages while developing.
 - Assume required tools are preinstalled on the snapshot (PM2, Claude CLI, python3). Do not bake tool preflight/installation into provider/orchestrator by default; use test scripts to validate and adjust images as needed.
 - Test as you go (and ask the user to validate). The goal is not to do this in one shot, but to work thoroughly and ensure we have built a strong foudation before continuing. 
 - Update the _spec/PROGRESS.md after major changes
@@ -26,8 +26,8 @@ General notes
 - Avoid shell quoting pitfalls by using explicit command specs and safe construction.
 
 Environment variables (expected across tests and apps):
-- `MORPH_API_KEY` — Morph API key for provider
-- `TESTING_SNAPSHOT_ID` — default `snapshot_c1p8b6c2` for E2E smoke
+- `CSB_API_KEY` — CodeSandbox API key for provider
+- `TESTING_TEMPLATE_ID` — default `69vrxg` for E2E smoke
 - `CLAUDE_ACCESS_TOKEN` — optional for E2E smoke (or a JSON file path)
 - Optional platform vars (kept for later phases): `PLATFORM_TOKEN`, `INSTANT_APP_ID`, `INSTANT_ADMIN_TOKEN`
 
@@ -75,36 +75,32 @@ Acceptance
 - Types compile under `strict`; no circular deps.
 
 
-## Phase 2 — `@repo/providers-morph` (VM Provider)
+## Phase 2 — `@repo/providers-codesandbox` (VM Provider)
 
 Purpose
-- Implement `VMProvider` using Morph’s REST API and exec interface.
+- Implement `VMProvider` using the CodeSandbox SDK for sandbox lifecycle, filesystem, and commands.
 
 Key References
-- Morph OpenAPI: `_reference/morph.json`
+- `_reference/codesandbox.md`
 
 Core Responsibilities
-- HTTP client with timeout, retry, and zod validation for critical endpoints (images, snapshots, instances, exec).
-- Status mapping: `pending→booting`, `ready→ready`, `paused→stopped`, `saving→stopping`, `error→error`.
+- SDK client wiring with timeout/retry strategy where helpful; validate critical inputs/outputs with zod where appropriate.
+- Status mapping across bootup types (`FORK/RESUME/CLEAN/RUNNING`) normalized to `booting|ready|stopping|stopped|error`.
 - Exec semantics:
-  - Prefer argv: call Morph exec with `[command, ...args]` directly.
-  - For multi-step scripts: write to a temp file and execute the interpreter as argv (e.g., `['/bin/bash', '/tmp/script.sh']`).
-  - IMPORTANT: Do NOT append `bash -lc` for Morph exec — this has been unreliable. Use direct argv or temp-script invocation.
-  - No streaming; capture complete stdout/stderr and exit code.
+  - Use SDK `commands.run` for one‑shot commands.
+  - For multi-step scripts: write a temp script and execute it; avoid fragile inline quoting.
+  - Capture complete stdout/stderr and exit code.
 - Files API:
-  - `writeFile`: prefer python base64 decode for reliability; fallback to heredoc/xxd if python is missing.
-  - `writeFileAtomic`: optionally create parent dir → write → chmod/chown if requested → verify exists and non-empty.
-  - Directory ops: `mkdir -p`, `rm -rf`, `test -d`/`test -f` via exec.
-  - Compound commands: accept options like `createDirs`, `mode`, `owner`, `group` and bundle them into a single remote execution to reduce roundtrips.
-  - `~` expansion: file operations must expand `~` to `capabilities.homeDir` consistently.
-  - Virtual file I/O: implemented via remote exec (no native FS channel). Guarantees/limits: binary-safe using base64; practical payload size ~10 MiB per operation (tunable); non-streaming, whole-buffer operations; performance dominated by base64 and remote process startup.
+  - Use SDK filesystem operations (`fs.writeTextFile`, `fs.readFile`, `fs.readdir`, etc.).
+  - Directory ops via SDK; minimize roundtrips with compound operations when reasonable.
+  - Virtual file I/O constraints: whole‑buffer operations; practical payload size limits apply; performance dominated by I/O and remote process startup when commands are used.
 - Instances API:
-  - `boot/get/list/stop/terminate/fork` with TTL mapping (`terminate` maps to Morph’s best available action).
-  - IMPORTANT: Provider owns readiness. For Morph, `boot` usually returns an instance already in `ready` state; if not, the provider performs minimal status polling until `ready` (with timeout/backoff) and then resolves. Orchestrator must not implement its own polling.
-  - Capabilities: `{ homeDir: '/root' }` by default.
+  - Create from template (fork), resume/hibernate, restart/shutdown, and list running sandboxes as needed.
+  - IMPORTANT: Provider owns readiness. Establish SDK connection; if `bootupType === 'CLEAN'`, run setup steps (see `_reference/codesandbox.md`). Orchestrator must not implement its own polling.
+  - Capabilities: `{ homeDir: '/project/workspace' }` by default.
 
 Design Choices
-- Prefer Morph exec endpoint over SSH; add SSH only if needed later.
+- Use CodeSandbox SDK; no SSH.
 - Avoid shell pipes for large writes; use base64 + python.
 - Use temp-script pattern for complex commands and clean up afterward.
 - Redact secrets in logs; log exit codes and stderr lengths, not contents.
@@ -115,12 +111,12 @@ Error Handling
 - Network/timeout: wrap with `NetworkError`/`TimeoutError` and include operation/context.
 
 Testing
-- Unit: URL builder (including deep object params); status mapping; retry/backoff planner; zod validation errors.
-- Integration (mocked): mock fetch; simulate 401/404/429/5xx; assert error types/messages; simulate exec/write success/failure; assert atomic write verification.
-- E2E Smoke (real Morph): see “E2E Smoke: Morph + PM2 + Claude”.
+- Unit: status mapping; retry/backoff planner; zod validation errors for our own types.
+- Integration (mocked): stub SDK calls; simulate auth/not found/rate limit/server; simulate exec/write success/failure; assert atomic write verification.
+- E2E Smoke (real CodeSandbox): see “E2E Smoke: CodeSandbox + PM2 + Claude”.
 
 Acceptance
-- Can boot (awaits to ready) → exec `echo ok` → atomically write and read a file.
+- Can create/resume (awaits to ready) → exec `echo ok` → atomically write and read a file.
 - Clear error boundaries and redacted logs.
 
 
@@ -149,7 +145,7 @@ Purpose
 Critical PM2 Notes (hard-earned)
 - There is no reliable `--cwd`: set cwd inside the bash payload.
 - Export env explicitly in the payload; avoid relying on PM2 env flags.
-- Use `pm2 start bash --name <name> --no-autorestart -- -lc '<payload>'` for one-shots (this is for PM2; the “no bash -lc for Morph exec” guidance does NOT apply here).
+- Use `pm2 start bash --name <name> --no-autorestart -- -lc '<payload>'` for one-shots (this is for PM2; provider exec guidance does not apply here).
 - Sanitize process names (alphanumeric + dash), keep < 50 chars.
 - Use `pm2 jlist` for JSON; if parsing fails, return a safe default and warn.
 - `pm2 logs <name> --nostream --lines <N>`: return raw text if normalization is brittle.
@@ -191,7 +187,7 @@ Reference
 Requirements
 - Base64-encode prompt and systemPrompt to avoid shell quoting issues.
 - Produce a shell ProcessSpec with a safe name like `cc-<sanitized(sessionName)>`.
-- Defaults: model = `sonnet`, cwd = `/root/operator/sw-compose` (or from provider capabilities), restart = `never`.
+- Defaults: model = `sonnet`, cwd = `/project/workspace/operator/sw-compose` (or from provider capabilities), restart = `never`.
 - Avoid embedding secrets; do not pass API keys via env unless explicitly provided (prefer credentials file).
 - Reminder: `claude -p` reads the prompt from stdin; the agent/process manager must pipe/echo the base64-decoded prompt into stdin for reliability.
 
@@ -260,23 +256,23 @@ Acceptance
 - `@repo/instant-platform-service`: Keep decoupled; used by apps/servers when needed.
 
 
-## E2E Smoke: Morph + PM2 + Claude
+## E2E Smoke: CodeSandbox + PM2 + Claude
 
 Goal
-- Validate the end-to-end path on a real Morph instance and confirm PM2 + Claude CLI runs with installed credentials.
+- Validate the end-to-end path on a real CodeSandbox sandbox and confirm PM2 + Claude CLI runs with installed credentials.
 
 Prereqs
 - Environment:
-  - `MORPH_API_KEY` set
-  - `TESTING_SNAPSHOT_ID` set (defaults to `snapshot_c1p8b6c2` if unspecified)
+  - `CSB_API_KEY` set
+  - `TESTING_TEMPLATE_ID` set (defaults to `69vrxg` if unspecified)
   - One of:
     - `CLAUDE_ACCESS_TOKEN` (OAuth token or Anthropic key) with a reasonable expiry; or
     - A token file JSON accessible to the app that can be embedded into the credentials file
 - Snapshot should include PM2 and Claude CLI (or ensure install steps exist before session start).
 
 Procedure
-- Provider: create Morph provider with `apiKey` and default `homeDir=/root`.
-  - Boot: `instances.boot(TESTING_SNAPSHOT_ID, { ttl_seconds: 1800, ttl_action: 'stop' })` and await completion (no client-side polling).
+- Provider: create CodeSandbox provider with `apiKey` and default `homeDir=/project/workspace`.
+  - Boot: create sandbox from `TESTING_TEMPLATE_ID` (fork) and connect via SDK; if `bootupType === 'CLEAN'`, run setup steps before proceeding.
 - Preflight checks (via exec):
   - `which pm2` and `pm2 -v` → if missing, surface actionable error.
   - `which claude` and `claude --version` → warn if missing; PM2 basics can still be tested.
@@ -292,11 +288,11 @@ Procedure
 - Cleanup:
   - Optionally stop/delete the PM2 process; stop/terminate instance per policy.
 - Extra diagnostics:
-  - Use the globally-authenticated `morphcloud` CLI to probe API and compare outputs when diagnosing issues.
+  - Use the SDK or `npx @codesandbox/sdk` CLI to probe operations and compare outputs when diagnosing issues.
 
 Troubleshooting
 - PM2 cwd/env: never rely on `--cwd`; embed `cd <cwd> && export ...` inside payload.
-- Morph exec: avoid appending `bash -lc`; prefer argv or temp-script + interpreter argv.
+- Provider exec: avoid fragile inline quoting; prefer SDK commands and temp scripts for multi‑step flows.
 - If `pm2 jlist` parsing fails, return an empty list and warn.
 - If files appear missing after writes, immediately read back; throw on empty/missing content.
 - If CLI auth fails, verify file path, permissions (600), and JSON structure per `_reference/pm2-claude-code.ts`.
@@ -322,7 +318,7 @@ Context Fields
 
 ## Logging & Observability
 
-- Use child loggers per package (Morph, PM2, Agent, Orchestrator, Credentials).
+- Use child loggers per package (CodeSandbox, PM2, Agent, Orchestrator, Credentials).
 - Levels: `info` for lifecycle, `debug` for command construction (without secrets), `warn` for retries, `error` for failures.
 - Emit event objects from orchestrator for future persistence.
 - Manual test scripts are encouraged in addition to automated tests; log clear diagnostics and cleanup steps.
@@ -332,19 +328,27 @@ Context Fields
 
 - Unit tests: run by default on every PR (no network).
 - Integration tests: mocks/stubs only (fast, deterministic).
-- E2E smoke: opt-in via env guard (e.g., `RUN_E2E=1`); requires `MORPH_API_KEY`; ensure cleanup.
+- E2E smoke: opt-in via env guard (e.g., `RUN_E2E=1`); requires `CSB_API_KEY`; ensure cleanup.
+- Shared Vitest config: import from `@repo/vitest-config/vitest.base`; for UI packages override `environment: 'jsdom'`.
+- For packages without tests, use `vitest --passWithNoTests` so `bunx turbo test` remains green.
 - Later: optional local provider (Docker/subprocess) for full local flows without cloud.
 
 
 ## Package Acceptance Checklists (Recap)
 
 - runtime-interfaces: Minimal types; strict TS; example usage compiles.
-- providers-morph: Boot awaits ready; exec works; atomic write + verify; robust error mapping.
+- providers-codesandbox: Create/resume awaits ready; exec works; atomic write + verify; robust error mapping.
 - process-shell: One-shot start works; errors surface; limitations documented.
 - process-pm2: Start payload correct; list/logs/stop work; name sanitize; cwd/env handled in payload; no `--cwd` reliance.
 - agents-claude-cli: Correct ProcessSpec; base64 handling; sensible defaults; no secrets in spec.
 - credentials: Atomic install with mode; optional post-install; logs redacted.
-- orchestrator: Full flow with fakes; events emitted; E2E passes on Morph snapshot.
+- orchestrator: Full flow with fakes; events emitted; E2E passes on CodeSandbox template.
+
+## TypeScript Build Hygiene
+
+- Typecheck tests: ensure `tsc --noEmit` includes test files (keep them in `tsconfig.json` includes).
+- Separate build config: add `tsconfig.build.json` that excludes tests for emitting.
+- Maintain type-only tests for `@repo/runtime-interfaces` to enforce exhaustive mappings and contract shape at compile time.
 
 
 ---

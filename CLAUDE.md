@@ -47,12 +47,12 @@ packages/[package-name]/
 Every package should have these standard scripts:
 ```json
 "scripts": {
-  "build": "tsc",
-  "dev": "tsc --watch",
+  "build": "tsc -p tsconfig.build.json",
+  "dev": "tsc -w -p tsconfig.build.json",
   "test": "vitest",
   "lint": "biome check .",
   "lint:fix": "biome check --fix .",
-  "typecheck": "tsc --noEmit"
+  "typecheck": "tsc --noEmit -p tsconfig.json"
 }
 ```
 - Add `"clean": "rm -rf dist"` for packages with build artifacts
@@ -98,18 +98,41 @@ Override specific compiler options only when necessary. The base config provides
 - ES2022 target
 - Source maps and declarations
 
+Build vs Typecheck pattern (recommended)
+- Keep tests included in `tsconfig.json` so `tsc --noEmit` typechecks tests too (ensure your include globs cover `*.test.ts`/`*.spec.ts`).
+- Add a separate `tsconfig.build.json` for emitting without tests. Example:
+
+```jsonc
+// tsconfig.build.json
+{
+  "extends": "./tsconfig.json",
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/__tests__/**"
+  ]
+}
+```
+
 ### Vitest Configuration
 
 When tests exist, create a `vitest.config.ts` extending the base:
 ```typescript
 import { defineConfig } from 'vitest/config';
-import baseConfig from '@repo/vitest-config/base';
+import base from '@repo/vitest-config/vitest.base';
 
 export default defineConfig({
-  ...baseConfig,
-  // Package-specific overrides if needed
+  ...base,
+  // UI packages may override:
+  // test: { ...base.test, environment: 'jsdom' }
 });
 ```
+Notes:
+- The shared base already includes the `vite-tsconfig-paths` plugin so TS path aliases work out of the box.
+- For packages without tests, consider `vitest --passWithNoTests` to keep `bunx turbo test` green.
 
 ### Package-Specific CLAUDE.md
 

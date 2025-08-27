@@ -3,11 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "exports": {
-    ".": "./vitest.config.base.ts",
-    "./vitest.config.base": "./vitest.config.base.ts"
+    ".": "./vitest.base.mjs",
+    "./vitest.base": "./vitest.base.mjs"
+  },
+  "dependencies": {
+    "vite-tsconfig-paths": "5.1.4"
   },
   "devDependencies": {
-    "vite-tsconfig-paths": "5.1.4",
     "vitest": "catalog:"
   }
 }

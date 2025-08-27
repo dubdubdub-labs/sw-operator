@@ -2,7 +2,7 @@
 
 This guide defines a clean, modular, testable architecture for a new Turborepo that orchestrates coding agents on remote VMs. It emphasizes separation of concerns, pragmatic interfaces, and incremental validation. It is self‑contained and does not rely on any previous code in this repository. Where external behavior is required, use the reference materials in `_reference/` as the source of truth:
 
-- Morph API (OpenAPI): `_reference/morph.json`
+- CodeSandbox SDK reference: `_reference/codesandbox.md` (template id: `69vrxg`)
 - Anthropic/Claude OAuth helper (PKCE): `_reference/cc-oauth.ts`
 - PM2 + Claude Code command patterns: `_reference/pm2-claude-code.ts`
 - Instant Platform (ephemeral DB) example: `_reference/instant-platform.ts`
@@ -11,7 +11,7 @@ This guide defines a clean, modular, testable architecture for a new Turborepo t
 ## Objectives and Constraints
 
 - Pluggable choices along three axes:
-  - VM providers (e.g., Morph; others later)
+  - VM providers (e.g., CodeSandbox; others later)
   - Process managers (PM2; or a simple shell runner for tests)
   - Coding agents (Claude CLI now; others later)
 - Strong separation of concerns with minimal interfaces between layers.
@@ -27,7 +27,7 @@ This guide defines a clean, modular, testable architecture for a new Turborepo t
 Conceptually, four pieces collaborate at runtime:
 
 1) VM Provider
-- Abstracts a remote compute API (e.g., Morph). Provides instance lifecycle, file IO, and one‑shot command execution.
+- Abstracts a remote compute API (e.g., CodeSandbox). Provides instance lifecycle, file IO, and one‑shot command execution.
 - Hides provider nuances (e.g., status mapping, TTL semantics) behind a small, stable interface.
 
 2) Process Manager
@@ -86,24 +86,23 @@ Follow the package structure and scripts conventions described in the monorepo g
 - Tests: types compile; sample narrowing tests; no runtime assertions needed.
  - Notes: Path semantics allow absolute or `~`-prefixed paths; providers expand `~` to their `capabilities.homeDir`.
 
-2) `@repo/providers-morph`
-- Purpose: Implement `VMProvider` using Morph API.
-- References: `_reference/morph.json` for endpoints and types.
+2) `@repo/providers-codesandbox`
+- Purpose: Implement `VMProvider` using the CodeSandbox SDK.
+- References: `_reference/codesandbox.md` for SDK usage and concepts.
 - Responsibilities:
-  - HTTP client with retry, timeout, and zod validation for Morph responses.
-  - Map Morph instance/snapshot statuses to provider‑agnostic statuses.
-  - Implement `exec(instanceId, spec)` using direct argv where possible. For multi-step scripts, write a temp script and invoke the interpreter directly (argv). Avoid appending `bash -lc` in provider exec calls.
-  - Implement atomic file IO: base64 + decode or python helper, then chmod/chown; verify existence and non‑empty content.
-  - `capabilities.homeDir = '/root'` (override with provider metadata if available).
+  - SDK client wiring with timeout/retry strategy as needed; validate critical inputs/outputs with zod where appropriate.
+  - Map CodeSandbox sandbox states and bootup types (`FORK/RESUME/CLEAN/RUNNING`) to provider‑agnostic statuses.
+  - Implement `exec(instanceId, spec)` via the SDK (`commands.run` for one‑shot; temp script for multi‑step); avoid brittle shell quoting.
+  - Implement atomic file IO using the SDK filesystem APIs; verify existence and non‑empty content after writes.
 - Exports:
-  - `createMorphProvider({ apiKey, baseUrl?, timeout?, logger? })`
-  - Types for configuration (no leaks of Morph‑specific model types on public API)
+  - `createCodeSandboxProvider({ apiKey, logger? })`
+  - Types for configuration (no leaks of SDK‑specific model types on public API)
 - Dependencies:
-  - `zod` (catalog), `@repo/runtime-interfaces` (workspace), `@repo/logger` (workspace)
+  - `@repo/runtime-interfaces` (workspace), `@repo/logger` (workspace), optional `zod` (catalog)
 - Tests:
-  - Unit: URL building, status mapping, atomic write plan assembling.
-  - Integration (mocked): HTTP stubs for list/boot/get/exec endpoints; file write verification; error mapping (401/404/429/5xx).
-  - Optional real smoke (flagged): environment‑guarded test to run a no‑op command on a real instance.
+  - Unit: status mapping, atomic write plan assembling.
+  - Integration (mocked): SDK call stubs for create/resume/commands/files; file write verification; error mapping.
+  - Optional real smoke (flagged): environment‑guarded test to run a no‑op command on a real sandbox.
 
 3) `@repo/process-pm2`
 - Purpose: ProcessManager backed by PM2 CLI, executed remotely via provider exec.
@@ -127,7 +126,7 @@ Follow the package structure and scripts conventions described in the monorepo g
 5) `@repo/agents-claude-cli`
 - Purpose: Provide an Agent for Claude CLI (Claude Code) sessions.
 - Responsibilities:
-  - `toProcessSpec(input)`: return a `ProcessSpec` using base64 to safely pass prompt/systemPrompt; set cwd to provider home‑relative working directory (e.g., `/root/operator/sw-compose`).
+  - `toProcessSpec(input)`: return a `ProcessSpec` using base64 to safely pass prompt/systemPrompt; set cwd to provider home‑relative working directory (e.g., `/project/workspace/operator/sw-compose`).
   - Expose sensible defaults (model, cwd) with options.
 - Exports: `createClaudeAgent({ defaultModel?, workDir? })`
 - Tests: spec builder correctness; naming sanitize; env merge.
@@ -205,7 +204,7 @@ Follow the package structure and scripts conventions described in the monorepo g
 - Logging:
   - Logger interface with `trace|debug|info|warn|error|fatal` and `child({ prefix, context })`.
   - Avoid logging secrets (mask tokens before logging); provide a debug flag to emit verbose command construction without sensitive data.
-  - Each package should create its own child logger using a clear prefix (e.g., `Morph`, `PM2`, `Orch`, `Agent`).
+  - Each package should create its own child logger using a clear prefix (e.g., `CodeSandbox`, `PM2`, `Orch`, `Agent`).
 
 
 ## Implementation Plan (Phased, Test‑First)
@@ -218,9 +217,9 @@ Phase 1: Contracts
 - Implement `@repo/runtime-interfaces` only (types, no logic).
 - Add minimal unit tests that validate example usage and compile under strict TS.
 
-Phase 2: Provider (Morph)
-- Build `@repo/providers-morph` that:
-  - Implements a small HTTP client (fetch) with timeout and retry (exponential backoff) and zod validation against `_reference/morph.json`.
+Phase 2: Provider (CodeSandbox)
+- Build `@repo/providers-codesandbox` that:
+  - Wires the CodeSandbox SDK with a retry/backoff policy where helpful; validate our inputs/outputs with zod as needed (see `_reference/codesandbox.md`).
   - Implements exec using direct argv; for multi-step scripts, write a temp script and invoke the interpreter directly (argv), avoiding forced `bash -lc`.
   - Implements robust file IO:
     - writeFile: use python base64 or heredoc; escape correctly.
@@ -258,13 +257,12 @@ Phase 8: App/CLI (optional for manual testing)
 - Contracts:
   - Types compile and are ergonomic to use; add a few generic tests to prevent regressions (e.g., exhaustive status mappings).
 
-- Provider (Morph):
-  - URL builder produces correct query params (including deep object e.g., `metadata[key]=value`).
-  - Status mapping is exhaustive (pending→booting, ready→ready, paused→stopped, saving→stopping, error→error).
-  - Readiness signal: Morph instance status `ready` (from GET instance); no SSH/HTTP probes in provider; optional post-ready exec check can be added later if needed.
-  - Error mapping: 400→validation, 401→auth, 404→not found, 429→rate limit, 5xx→server; include parsed body when available.
-  - File IO writes and verifies content; fallback path exercised (e.g., write/verify failure throws actionable error).
-  - Exec argv vs shell: for provider exec, prefer argv; avoid forcing `bash -lc`. PM2 payloads can use `bash -lc` inside PM2 itself.
+- Provider (CodeSandbox):
+  - Status mapping across bootup types (`FORK/RESUME/CLEAN/RUNNING`) is exhaustive and normalizes to `booting|ready|stopping|stopped|error`.
+  - Readiness signal: SDK connection established; if `CLEAN`, run setup steps before resolving ready.
+  - Error mapping: auth/not found/rate limit/server/network mapped to standardized provider errors.
+  - File IO writes and verifies content via SDK; fallback path exercised (e.g., write/verify failure throws actionable error).
+  - Exec via SDK commands/tasks; for multi‑step sequences, prefer temp scripts over brittle inline quoting.
 
 - PM2 manager:
   - Start command covers name, `--no-autorestart`, `--` separator, and payload quoting.
@@ -287,7 +285,7 @@ Coverage goals: Focus on correctness over percentage. Each public function shoul
 
 Prereqs
 - Bun installed; `turbo` installed globally.
-- A Morph API key for real smoke tests (optional).
+- A CodeSandbox API key for real smoke tests (optional).
 - A Claude OAuth token JSON or an Anthropic API key (use the OAuth helper in `reference/cc-oauth.ts` to obtain one if needed).
 
 Local commands
@@ -295,8 +293,8 @@ Local commands
 - `bunx turbo test` → run tests.
 - `bunx turbo dev` → iterative build for packages you’re editing.
 
-Manual smoke (optional, requires Morph):
-- Wire provider = Morph, process manager = PM2, agent = Claude.
+Manual smoke (optional, requires CodeSandbox):
+- Wire provider = CodeSandbox, process manager = PM2, agent = Claude.
 - Boot from a known snapshot, install credentials profile that writes `${homeDir}/.claude/.credentials.json` with `600` mode.
 - Verify with `provider.files.readFile()` that the file exists and is non‑empty, and print sanitized contents for debug.
 - Start a session; fetch logs; confirm output appears.
@@ -323,9 +321,13 @@ Debug tips
 - tsconfig.json
   - extends `@repo/typescript-config/base.json`
   - compilerOptions: `outDir: dist`, `rootDir: src`, `declaration: true`, `declarationMap: true`
+  - include tests so `tsc --noEmit` typechecks them too
+  - add a separate `tsconfig.build.json` that excludes tests for emitting
 
 - vitest.config.ts (if tests)
-  - extend `@repo/vitest-config/base`
+  - import base from `@repo/vitest-config/vitest.base` and extend
+  - override only what’s needed (e.g., `environment: 'jsdom'` in UI packages)
+  - use `vitest --passWithNoTests` for packages without tests to keep `bunx turbo test` green
 
 - Errors
   - Create dedicated error classes under `src/errors/` with codes and helpful messages.
@@ -352,9 +354,9 @@ Guidelines
 
 ## Reference Integration Notes
 
-- Morph API
-  - Build a small typed client around the endpoints you need (images, snapshots, instances, exec, http exposure if needed).
-  - Use zod schemas that mirror `_reference/morph.json` fields; validate all responses at runtime.
+- CodeSandbox SDK
+  - Use the SDK for sandbox lifecycle (create/resume/hibernate/restart/shutdown), commands/tasks, filesystem, and hosts.
+  - See `_reference/codesandbox.md` for examples and guidance; validate our inputs/outputs with zod where helpful.
 
 - Claude OAuth
   - Use `_reference/cc-oauth.ts` to implement `@repo/claude-oauth` or call it directly in app code.

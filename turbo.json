@@ -19,6 +19,11 @@
     "lint:fix:unsafe": {
       "dependsOn": ["^lint:fix:unsafe"]
     },
+    "test": {
+      "dependsOn": ["^test"],
+      "inputs": ["$TURBO_DEFAULT$"],
+      "outputs": []
+    },
     "typecheck": {
       "dependsOn": ["^typecheck"]
     },
