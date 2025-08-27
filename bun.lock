@@ -19,8 +19,8 @@
         "ultracite": "5.1.2",
       },
     },
-    "packages/sample-lib": {
-      "name": "@repo/sample-lib",
+    "packages/example-lib": {
+      "name": "@repo/example-lib",
       "version": "0.0.0",
       "devDependencies": {
         "@repo/typescript-config": "workspace:*",
@@ -36,7 +36,7 @@
     },
     "packages/vitest-config": {
       "name": "@repo/vitest-config",
-      "version": "0.0.0",
+      "version": "0.0.1",
       "dependencies": {
         "vite-tsconfig-paths": "5.1.4",
       },
@@ -164,7 +164,7 @@
 
     "@radix-ui/react-use-layout-effect": ["@radix-ui/react-use-layout-effect@1.1.1", "", { "peerDependencies": { "@types/react": "*", "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc" }, "optionalPeers": ["@types/react"] }, "sha512-RbJRS4UWQFkzHTTwVymMTUv8EqYhOp8dOOviLj2ugtTiXRaRQS7GLGxZTLL1jWhMeoSCf5zmcZkqTl9IiYfXcQ=="],
 
-    "@repo/sample-lib": ["@repo/sample-lib@workspace:packages/sample-lib"],
+    "@repo/example-lib": ["@repo/example-lib@workspace:packages/example-lib"],
 
     "@repo/typescript-config": ["@repo/typescript-config@workspace:packages/typescript-config"],
 

@@ -117,21 +117,50 @@ Build vs Typecheck pattern (recommended)
 }
 ```
 
+### Vitest + Config Files Strategy
+
+We want config files (like `vitest.config.ts`) type‑checked, but never emitted in builds.
+
+- In `tsconfig.json` set `rootDir` to `"."` and include the config file so `tsc --noEmit` checks it:
+
+```jsonc
+{
+  "extends": "@repo/typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": ".",
+    "declaration": true,
+    "declarationMap": true,
+    // For test globals like describe/it/expect
+    "types": ["vitest/globals"]
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "vitest.config.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
+}
+```
+
+- In `tsconfig.build.json`, reset `rootDir` to `"./src"` and explicitly exclude tests and config so builds only emit library code.
+
+This surfaces config type errors in `typecheck` without leaking config files into `dist`.
+
 ### Vitest Configuration
 
-When tests exist, create a `vitest.config.ts` extending the base:
+Use the shared config package and our helper to extend it cleanly:
 ```typescript
-import { defineConfig } from 'vitest/config';
-import base from '@repo/vitest-config/vitest.base';
+import { extendVitestConfig } from '@repo/vitest-config';
 
-export default defineConfig({
-  ...base,
+export default extendVitestConfig({
   // UI packages may override:
-  // test: { ...base.test, environment: 'jsdom' }
+  // test: { environment: 'jsdom' }
 });
 ```
 Notes:
 - The shared base already includes the `vite-tsconfig-paths` plugin so TS path aliases work out of the box.
+- The `@repo/vitest-config` package exports prebuilt ESM (`.mjs`) for runtime and `.d.ts` for types, avoiding TS/CJS ESM type errors when importing from config files.
 - For packages without tests, consider `vitest --passWithNoTests` to keep `bunx turbo test` green.
 
 ### Package-Specific CLAUDE.md

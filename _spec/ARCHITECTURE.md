@@ -320,12 +320,13 @@ Debug tips
 
 - tsconfig.json
   - extends `@repo/typescript-config/base.json`
-  - compilerOptions: `outDir: dist`, `rootDir: src`, `declaration: true`, `declarationMap: true`
-  - include tests so `tsc --noEmit` typechecks them too
-  - add a separate `tsconfig.build.json` that excludes tests for emitting
+  - compilerOptions: `outDir: dist`, `rootDir: .`, `declaration: true`, `declarationMap: true`, add `types: ["vitest/globals"]` for packages with tests
+  - include tests and config files (e.g., `vitest.config.ts`) so `tsc --noEmit` typechecks them too
+  - add a separate `tsconfig.build.json` with `rootDir: ./src` that excludes tests and config for emitting
 
-- vitest.config.ts (if tests)
-  - import base from `@repo/vitest-config/vitest.base` and extend
+ - vitest.config.ts (if tests)
+   - import { extendVitestConfig } from `@repo/vitest-config` and extend
+   - example: `export default extendVitestConfig({ /* test overrides */ })`
   - override only what’s needed (e.g., `environment: 'jsdom'` in UI packages)
   - use `vitest --passWithNoTests` for packages without tests to keep `bunx turbo test` green
 

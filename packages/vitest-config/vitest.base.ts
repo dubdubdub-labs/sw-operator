@@ -1,7 +1,7 @@
-import { defineConfig } from "vitest/config";
+import { defineConfig, mergeConfig, type UserConfigExport } from "vitest/config";
 import tsconfigPaths from "vite-tsconfig-paths";
 
-export default defineConfig({
+const base = defineConfig({
   plugins: [tsconfigPaths()],
   test: {
     globals: true,
@@ -18,3 +18,8 @@ export default defineConfig({
   },
 });
 
+export function extendVitestConfig(overrides: UserConfigExport = {}): UserConfigExport {
+  return mergeConfig(base, defineConfig(overrides));
+}
+
+export default base;

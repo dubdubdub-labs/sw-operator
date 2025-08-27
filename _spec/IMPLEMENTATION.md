@@ -329,7 +329,7 @@ Context Fields
 - Unit tests: run by default on every PR (no network).
 - Integration tests: mocks/stubs only (fast, deterministic).
 - E2E smoke: opt-in via env guard (e.g., `RUN_E2E=1`); requires `CSB_API_KEY`; ensure cleanup.
-- Shared Vitest config: import from `@repo/vitest-config/vitest.base`; for UI packages override `environment: 'jsdom'`.
+ - Shared Vitest config: import { extendVitestConfig } from `@repo/vitest-config`; for UI packages override `environment: 'jsdom'`.
 - For packages without tests, use `vitest --passWithNoTests` so `bunx turbo test` remains green.
 - Later: optional local provider (Docker/subprocess) for full local flows without cloud.
 
@@ -346,8 +346,8 @@ Context Fields
 
 ## TypeScript Build Hygiene
 
-- Typecheck tests: ensure `tsc --noEmit` includes test files (keep them in `tsconfig.json` includes).
-- Separate build config: add `tsconfig.build.json` that excludes tests for emitting.
+- Typecheck scope (`tsconfig.json`): include tests and config files (e.g., `vitest.config.ts`). Set `rootDir: .` so config is within the program.
+- Build scope (`tsconfig.build.json`): set `rootDir: ./src` and exclude tests and config to avoid emitting them.
 - Maintain type-only tests for `@repo/runtime-interfaces` to enforce exhaustive mappings and contract shape at compile time.
 
 

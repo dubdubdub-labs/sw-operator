@@ -1,10 +1,23 @@
 {
   "name": "@repo/vitest-config",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
+  "type": "module",
   "exports": {
-    ".": "./vitest.base.mjs",
-    "./vitest.base": "./vitest.base.mjs"
+    ".": {
+      "types": "./vitest.base.d.ts",
+      "import": "./vitest.base.mjs"
+    },
+    "./vitest.base": {
+      "types": "./vitest.base.d.ts",
+      "import": "./vitest.base.mjs"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "vitest.base": ["vitest.base.d.ts"],
+      "*": ["vitest.base.d.ts"]
+    }
   },
   "dependencies": {
     "vite-tsconfig-paths": "5.1.4"
