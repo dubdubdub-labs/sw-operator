@@ -5,7 +5,6 @@
 This is a Turborepo monorepo with the following structure:
 - `/apps/*` - Application packages  
 - `/packages/*` - Shared libraries and utilities
-- Root configuration files shared across all packages
 
 `turbo` is installed globally.
 
@@ -24,41 +23,26 @@ packages/[package-name]/
 └── vitest.config.ts   # Test config (if tests exist)
 ```
 
-### Package.json Configuration
+### Package Generation 
 
-#### Naming Convention
-- Always use `@repo/` prefix for internal packages: `"name": "@repo/package-name"`
+You should almost ALWAYS use the `turbo gen` command to scaffold a new package, which comes with nice "out of the box" defaults for our monorepo. 
 
-#### Type Module
-- All packages must be ESM: `"type": "module"`
-
-#### Exports
-- Define proper exports with types first:
-```json
-"exports": {
-  ".": {
-    "types": "./dist/index.d.ts",
-    "import": "./dist/index.js"
-  }
-}
+```bash
+bunx turbo gen repo-package --args <package-name> <packages | apps> <yes | no> <standard | pass>
 ```
+This commands includes package name (without @repo/ prefix), target (packages or apps), whether to include a sample test file, and whether to use `vitest` or `vitest --passWithNoTests` for the "test" script in package.json.
 
-#### Scripts Convention
-Every package should have these standard scripts:
-```json
-"scripts": {
-  "build": "tsc -p tsconfig.build.json",
-  "dev": "tsc -w -p tsconfig.build.json",
-  "test": "vitest",
-  "lint": "biome check .",
-  "lint:fix": "biome check --fix .",
-  "typecheck": "tsc --noEmit -p tsconfig.json"
-}
-```
-- Add `"clean": "rm -rf dist"` for packages with build artifacts
-- Keep scripts consistent across all packages for Turbo orchestration
 
-#### Dependencies
+This will scaffold: 
+- package.json, with @repo/package-name, type module, build / dev / test / lint / typecheck / clean scripts, type: module, exports: { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } }, and catalog dependencies
+- tsconfig.json
+- tsconfig.build.json
+- vitest.config.ts
+- src/index.ts
+- src/index.test.ts
+- CLAUDE.md (+ symlink to AGENTS.md) -- do NOT forget to fill these out!
+
+### Dependencies
 - Use `catalog:` for shared dependencies from root package.json catalog
 - Use `workspace:*` for internal package dependencies
 - Examples:
@@ -74,94 +58,6 @@ Every package should have these standard scripts:
   "vitest": "catalog:"
 }
 ```
-
-### TypeScript Configuration
-
-All packages should extend the base configuration:
-```json
-{
-  "extends": "@repo/typescript-config/base.json",
-  "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "declaration": true,
-    "declarationMap": true
-  },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist"]
-}
-```
-
-Override specific compiler options only when necessary. The base config provides:
-- ESNext module system with bundler resolution
-- Strict type checking
-- ES2022 target
-- Source maps and declarations
-
-Build vs Typecheck pattern (recommended)
-- Keep tests included in `tsconfig.json` so `tsc --noEmit` typechecks tests too (ensure your include globs cover `*.test.ts`/`*.spec.ts`).
-- Add a separate `tsconfig.build.json` for emitting without tests. Example:
-
-```jsonc
-// tsconfig.build.json
-{
-  "extends": "./tsconfig.json",
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "**/*.test.ts",
-    "**/*.spec.ts",
-    "**/__tests__/**"
-  ]
-}
-```
-
-### Vitest + Config Files Strategy
-
-We want config files (like `vitest.config.ts`) type‑checked, but never emitted in builds.
-
-- In `tsconfig.json` set `rootDir` to `"."` and include the config file so `tsc --noEmit` checks it:
-
-```jsonc
-{
-  "extends": "@repo/typescript-config/base.json",
-  "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": ".",
-    "declaration": true,
-    "declarationMap": true,
-    // For test globals like describe/it/expect
-    "types": ["vitest/globals"]
-  },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "vitest.config.ts"
-  ],
-  "exclude": ["node_modules", "dist"]
-}
-```
-
-- In `tsconfig.build.json`, reset `rootDir` to `"./src"` and explicitly exclude tests and config so builds only emit library code.
-
-This surfaces config type errors in `typecheck` without leaking config files into `dist`.
-
-### Vitest Configuration
-
-Use the shared config package and our helper to extend it cleanly:
-```typescript
-import { extendVitestConfig } from '@repo/vitest-config';
-
-export default extendVitestConfig({
-  // UI packages may override:
-  // test: { environment: 'jsdom' }
-});
-```
-Notes:
-- The shared base already includes the `vite-tsconfig-paths` plugin so TS path aliases work out of the box.
-- The `@repo/vitest-config` package exports prebuilt ESM (`.mjs`) for runtime and `.d.ts` for types, avoiding TS/CJS ESM type errors when importing from config files.
-- For packages without tests, consider `vitest --passWithNoTests` to keep `bunx turbo test` green.
 
 ### Package-Specific CLAUDE.md
 
