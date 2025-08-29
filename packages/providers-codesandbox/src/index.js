@@ -1,25 +1,8 @@
 import { posix as path } from "node:path";
-import type {
-  CommandSpec,
-  ExecAPI,
-  ExecResult,
-  FilesAPI,
-  InstancesAPI,
-  ProviderCapabilities,
-  VMInstance,
-  VMProvider,
-} from "@repo/runtime-interfaces";
 import { ProviderError } from "@repo/runtime-interfaces";
-import type { CodeSandboxAdapter } from "./adapter.js";
 import { mapBootupToStatus } from "./status.js";
 
-export type CodeSandboxProviderOptions = {
-  apiKey: string;
-  homeDir?: string;
-  adapter?: CodeSandboxAdapter;
-};
-
-function _notImplemented<T>(op: string): Promise<T> {
+function _notImplemented(op) {
   return Promise.reject(
     new ProviderError(
       "SERVER_ERROR",
@@ -27,8 +10,7 @@ function _notImplemented<T>(op: string): Promise<T> {
     )
   );
 }
-
-function ensureAdapter(adapter: CodeSandboxAdapter | undefined, op: string) {
+function ensureAdapter(adapter, op) {
   if (!adapter) {
     throw new ProviderError(
       "SERVER_ERROR",
@@ -37,8 +19,7 @@ function ensureAdapter(adapter: CodeSandboxAdapter | undefined, op: string) {
   }
   return adapter;
 }
-
-function toPayload(spec: CommandSpec): string {
+function toPayload(spec) {
   const cwd = spec.cwd ? `cd ${spec.cwd} && ` : "";
   const env = spec.env
     ? `${Object.entries(spec.env)
@@ -51,20 +32,12 @@ function toPayload(spec: CommandSpec): string {
   const args = spec.args?.map((a) => JSON.stringify(a)).join(" ") ?? "";
   return `${cwd}${env}${spec.command} ${args}`.trim();
 }
-
-function normalizePath(
-  input: string,
-  homeDir: string
-): {
-  abs: string;
-  rel: string;
-  dir: string;
-} {
+function normalizePath(input, homeDir) {
   const abs = input.startsWith("~")
     ? path.join(homeDir, input.slice(2))
     : input;
   const cleaned = path.normalize(abs);
-  let rel: string;
+  let rel;
   if (cleaned.startsWith(`${homeDir}/`)) {
     rel = `./${cleaned.slice(homeDir.length + 1)}`;
   } else if (cleaned === homeDir) {
@@ -75,40 +48,35 @@ function normalizePath(
   const dir = path.dirname(cleaned);
   return { abs: cleaned, rel, dir };
 }
-
-export function createCodeSandboxProvider(
-  opts: CodeSandboxProviderOptions
-): VMProvider {
+export function createCodeSandboxProvider(opts) {
   const providerOpts = opts;
-  const capabilities: ProviderCapabilities = {
+  const capabilities = {
     homeDir: opts.homeDir ?? "/project/workspace",
   };
-
-  const instances: InstancesAPI = {
-    boot(snapshotId: string): Promise<VMInstance> {
+  const instances = {
+    boot(snapshotId) {
       return Promise.resolve({
         id: `csb-${snapshotId}`,
         status: mapBootupToStatus("FORK"),
       });
     },
-    get(instanceId: string): Promise<VMInstance> {
+    get(instanceId) {
       return Promise.resolve({ id: instanceId, status: "ready" });
     },
-    list(): Promise<VMInstance[]> {
+    list() {
       return Promise.resolve([]);
     },
-    stop(_instanceId: string): Promise<void> {
+    stop(_instanceId) {
       return Promise.resolve();
     },
-    terminate(_instanceId: string): Promise<void> {
+    terminate(_instanceId) {
       return Promise.resolve();
     },
-    fork(instanceId: string): Promise<VMInstance> {
+    fork(instanceId) {
       return Promise.resolve({ id: `${instanceId}-fork`, status: "ready" });
     },
   };
-
-  const files: FilesAPI = {
+  const files = {
     async readFile(instanceId, pth, enc = "utf8") {
       const adapter = ensureAdapter(providerOpts.adapter, "files.readFile");
       const client = await adapter.connect(instanceId);
@@ -201,18 +169,13 @@ export function createCodeSandboxProvider(
       await client.run(`rm -rf ${JSON.stringify(abs)}`);
     },
   };
-
-  const exec: ExecAPI = async (
-    instanceId,
-    spec: CommandSpec
-  ): Promise<ExecResult> => {
+  const exec = async (instanceId, spec) => {
     const adapter = ensureAdapter(providerOpts.adapter, "exec.run");
     const client = await adapter.connect(instanceId);
     const command = toPayload(spec);
     const res = await client.run(command);
     return res;
   };
-
   return {
     name: "codesandbox",
     version: "0.0.1",
@@ -220,9 +183,8 @@ export function createCodeSandboxProvider(
     instances,
     files,
     exec,
-  } satisfies VMProvider;
+  };
 }
-
 export { mapBootupToStatus } from "./status.js";
 export {
   cleanupSandbox,

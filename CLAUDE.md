@@ -28,7 +28,7 @@ packages/[package-name]/
 You should almost ALWAYS use the `turbo gen` command to scaffold a new package, which comes with nice "out of the box" defaults for our monorepo. 
 
 ```bash
-bunx turbo gen repo-package --args <package-name> <packages | apps> <yes | no> <standard | pass>
+turbo gen repo-package --args <package-name> <packages | apps> <yes | no> <standard | pass>
 ```
 This commands includes package name (without @repo/ prefix), target (packages or apps), whether to include a sample test file, and whether to use `vitest` or `vitest --passWithNoTests` for the "test" script in package.json.
 

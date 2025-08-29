@@ -1,0 +1,8 @@
+{"kind":"run_start","runId":"2025-08-27T20-07-02-234Z","ts":"2025-08-27T20:07:02.241Z","node":"v20.11.0","cwd":"/Users/anupambatra/dubdubdebug/sw-operator/apps/e2e-smoke"}
+{"ts":"2025-08-27T20:07:02.242Z","kind":"test_start","test":"provider_smoke","resultsFile":"/Users/anupambatra/dubdubdebug/sw-operator/apps/e2e-smoke/e2e-results/run-2025-08-27T20-07-02-234Z.jsonl"}
+{"ts":"2025-08-27T20:07:04.843Z","kind":"sandbox_created","id":"577q4c","template":"69vrxg"}
+{"ts":"2025-08-27T20:07:04.844Z","kind":"provider_exec_start","spec":{"kind":"shell","script":"echo ok"}}
+{"ts":"2025-08-27T20:07:06.355Z","kind":"provider_exec_done","out_sample":"ok\r\n","exit_code":0}
+{"ts":"2025-08-27T20:07:07.743Z","kind":"provider_write_done","path":"~/.e2e-smoke.txt"}
+{"ts":"2025-08-27T20:07:09.220Z","kind":"provider_read_done","path":"~/.e2e-smoke.txt","read_sample":"Hello"}
+{"ts":"2025-08-27T20:07:29.732Z","kind":"sandbox_cleaned","id":"577q4c"}
