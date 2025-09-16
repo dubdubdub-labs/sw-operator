@@ -1,7 +1,0 @@
-{"kind":"run_start","runId":"2025-08-27T20-07-02-122Z","ts":"2025-08-27T20:07:02.226Z","node":"v20.11.0","cwd":"/Users/anupambatra/dubdubdebug/sw-operator/apps/e2e-smoke"}
-{"ts":"2025-08-27T20:07:02.227Z","kind":"test_start","test":"sdk_smoke","resultsFile":"/Users/anupambatra/dubdubdebug/sw-operator/apps/e2e-smoke/e2e-results/run-2025-08-27T20-07-02-122Z.jsonl"}
-{"ts":"2025-08-27T20:07:04.001Z","kind":"sandbox_created","id":"6lq3c5","template":"69vrxg"}
-{"ts":"2025-08-27T20:07:04.421Z","kind":"sandbox_connected","id":"6lq3c5"}
-{"ts":"2025-08-27T20:07:05.088Z","kind":"exec_done","cmd":"echo 'ok'","out_sample":"ok\r\n"}
-{"ts":"2025-08-27T20:07:05.295Z","kind":"fs_rw","path":"./hello.txt","read_sample":"Hello"}
-{"ts":"2025-08-27T20:07:26.085Z","kind":"sandbox_cleaned","id":"6lq3c5"}

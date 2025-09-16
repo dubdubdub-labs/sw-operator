@@ -1,8 +1,0 @@
-{"kind":"run_start","runId":"2025-08-27T20-05-57-564Z","ts":"2025-08-27T20:05:57.570Z","node":"v20.11.0","cwd":"/Users/anupambatra/dubdubdebug/sw-operator/apps/e2e-smoke"}
-{"ts":"2025-08-27T20:05:57.571Z","kind":"test_start","test":"provider_smoke","resultsFile":"/Users/anupambatra/dubdubdebug/sw-operator/apps/e2e-smoke/e2e-results/run-2025-08-27T20-05-57-564Z.jsonl"}
-{"ts":"2025-08-27T20:05:59.791Z","kind":"sandbox_created","id":"9ynllx","template":"69vrxg"}
-{"ts":"2025-08-27T20:05:59.793Z","kind":"provider_exec_start","spec":{"kind":"shell","script":"echo ok"}}
-{"ts":"2025-08-27T20:06:01.315Z","kind":"provider_exec_done","out_sample":"ok\r\n","exit_code":0}
-{"ts":"2025-08-27T20:06:02.501Z","kind":"provider_write_done","path":"~/.e2e-smoke.txt"}
-{"ts":"2025-08-27T20:06:03.823Z","kind":"provider_read_done","path":"~/.e2e-smoke.txt","read_sample":"Hello"}
-{"ts":"2025-08-27T20:06:24.895Z","kind":"sandbox_cleaned","id":"9ynllx"}
