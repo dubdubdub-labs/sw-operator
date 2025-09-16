@@ -15,6 +15,13 @@
   "linter": {
     "includes": ["**", "!bun.lock"],
     "rules": {
+      "performance": {
+        "noNamespaceImport": "off"
+      },
+      "complexity": {
+        "noExcessiveCognitiveComplexity": "off",
+        "noVoid": "off"
+      },
       "a11y": {
         "useSemanticElements": "off",
         "useAriaPropsForRole": "off",
@@ -23,19 +30,23 @@
         "noStaticElementInteractions": "off"
       },
       "correctness": {
-        "noInvalidPositionAtImportRule": "off"
+        "noInvalidPositionAtImportRule": "off",
       },
       "nursery": {
         "noUnknownAtRule": "off",
         "useExhaustiveSwitchCases": "off",
         "useJsonImportAttribute": "off",
-        "noNoninteractiveElementInteractions": "off"
+        "noNoninteractiveElementInteractions": "off",
+        "noNestedComponentDefinitions": "off",
+        "noShadow": "warn"
       },
       "style": {
-        "noNonNullAssertion": "off"
+        "noNonNullAssertion": "off",
+        "noNestedTernary": "off"
       },
       "suspicious": {
-        "noConsole": "off"
+        "noConsole": "off",
+        "useAwait": "off"
       }
     }
   }

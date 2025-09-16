@@ -1,16 +1,32 @@
-import { existsSync, mkdirSync, symlinkSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { cpSync, existsSync, mkdirSync, readFileSync, symlinkSync, writeFileSync, lstatSync, unlinkSync } from "node:fs";
+import { basename, extname, join, relative, sep } from "node:path";
 import type { PlopTypes } from "@turbo/gen";
 
 const KEBAB_RE = /^[a-z0-9-]+$/;
+const PATH_RE = /^[a-z0-9-]+(?:\/[a-z0-9-]+)*$/;
 
 export default function generator(plop: PlopTypes.NodePlopAPI) {
-  plop.setHelper("pkgName", (name: string) =>
-    name.startsWith("@repo/") ? name : `@repo/${name}`
-  );
+  // Small helpers kept local to this file; keep simple and predictable.
+  const toBoolean = (val: unknown, defaultValue = false): boolean => {
+    if (typeof val === "boolean") return val;
+    if (typeof val === "string") {
+      const v = val.trim().toLowerCase();
+      if (["y", "yes", "true", "1"].includes(v)) return true;
+      if (["n", "no", "false", "0"].includes(v)) return false;
+    }
+    return defaultValue;
+  };
+  // Helper: compute full package name, optionally with groupPath segments
+  plop.setHelper("pkgName", (name: string, groupPath?: string) => {
+    const normalizedName = name.startsWith("@repo/") ? name.slice(6) : name;
+    const group = (groupPath || "").trim();
+    const prefix = group ? `${group.replaceAll("/", "-")}-` : "";
+    return `@repo/${prefix}${normalizedName}`;
+  });
 
   plop.setGenerator("repo-package", {
-    description: "Generate a new @repo/* package (ESM, TS, Vitest, Biome)",
+    description:
+      "Generate a new @repo/* package (ESM, TS, Vitest, Biome) under packages/, with optional nested path",
     prompts: [
       {
         type: "input",
@@ -20,14 +36,21 @@ export default function generator(plop: PlopTypes.NodePlopAPI) {
           v && KEBAB_RE.test(v) ? true : "use-kebab-case (a-z0-9-)",
       },
       {
-        type: "list",
-        name: "target",
-        message: "Workspace location:",
-        choices: [
-          { name: "packages", value: "packages" },
-          { name: "apps", value: "apps" },
-        ],
-        default: "packages",
+        type: "input",
+        name: "groupPath",
+        message:
+          "Optional subfolder path under packages (e.g. instantdb or backend/utils):",
+        validate: (v: string) =>
+          !v || PATH_RE.test(v)
+            ? true
+            : "use segments like a/b/c with kebab-case (a-z0-9-)",
+        default: "",
+      },
+      {
+        type: "confirm",
+        name: "built",
+        message: "Is this a built package (compile to dist/)?",
+        default: true,
       },
       {
         type: "confirm",
@@ -51,15 +74,37 @@ export default function generator(plop: PlopTypes.NodePlopAPI) {
     ],
     actions: (answers) => {
       const name = (answers?.name as string).trim();
-      const pk = name.startsWith("@repo/") ? name : `@repo/${name}`;
-      const folder = join(answers?.target as string, name);
+      const groupPath = (answers?.groupPath as string)?.trim() || "";
+      const groupSegments = groupPath ? groupPath.split("/") : [];
+      const target = "packages";
+      const folder = join(target, ...groupSegments, name);
+      const combined = (groupSegments.length
+        ? `${groupSegments.join("-")}-`
+        : "") + name;
+      const pk = name.startsWith("@repo/") ? name : `@repo/${combined}`;
       const actions: PlopTypes.ActionType[] = [];
-      const withTests = Boolean((answers as { withTests?: boolean }).withTests);
+      const withTests = toBoolean((answers as { withTests?: unknown }).withTests, true);
+      const isBuilt = toBoolean((answers as { built?: unknown }).built, true);
       const selectedMode =
         (answers as { testMode?: string }).testMode ||
         (withTests ? "standard" : "pass");
       const testScript =
         selectedMode === "pass" ? "vitest --passWithNoTests" : "vitest";
+
+      const exportsField = isBuilt
+        ? '"exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },'
+        : '"exports": { ".": "./src/index.ts" },';
+
+      const scriptEntries = [
+        isBuilt ? '"build": "tsc -p tsconfig.build.json"' : undefined,
+        isBuilt ? '"dev": "tsc -w -p tsconfig.build.json"' : undefined,
+        `"test": "${testScript}"`,
+        '"lint": "biome check ."',
+        '"lint:fix": "biome check . --write"',
+        '"lint:fix:unsafe": "biome check . --unsafe --write"',
+        '"typecheck": "tsc --noEmit -p tsconfig.json"',
+        '"clean": "rm -rf dist"',
+      ].filter(Boolean) as string[];
 
       actions.push({
         type: "add",
@@ -69,15 +114,9 @@ export default function generator(plop: PlopTypes.NodePlopAPI) {
   "version": "0.0.1",
   "private": true,
   "type": "module",
-  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
+  ${exportsField}
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
-    "dev": "tsc -w -p tsconfig.build.json",
-    "test": "${testScript}",
-    "lint": "biome check .",
-    "lint:fix": "biome check --fix .",
-    "typecheck": "tsc --noEmit -p tsconfig.json",
-    "clean": "rm -rf dist"
+    ${scriptEntries.join(",\n    ")}
   },
   "dependencies": {},
   "devDependencies": {
@@ -109,10 +148,11 @@ export default function generator(plop: PlopTypes.NodePlopAPI) {
 `,
       });
 
-      actions.push({
-        type: "add",
-        path: `${folder}/tsconfig.build.json`,
-        template: `{
+      if (isBuilt) {
+        actions.push({
+          type: "add",
+          path: `${folder}/tsconfig.build.json`,
+          template: `{
   "extends": "./tsconfig.json",
   "compilerOptions": { "rootDir": "./src" },
   "include": ["src/**/*.ts"],
@@ -126,7 +166,8 @@ export default function generator(plop: PlopTypes.NodePlopAPI) {
   ]
 }
 `,
-      });
+        });
+      }
 
       actions.push({
         type: "add",
@@ -162,7 +203,7 @@ describe("placeholder", () => {
       actions.push({
         type: "add",
         path: `${folder}/CLAUDE.md`,
-        template: `# {{ pkgName name }}
+        template: `# {{ pkgName name groupPath }}
 
 Purpose
 - Describe the package's role in 1–2 sentences.
@@ -202,7 +243,7 @@ Notes
         const files = [
           "package.json",
           "tsconfig.json",
-          "tsconfig.build.json",
+          isBuilt ? "tsconfig.build.json" : undefined,
           "vitest.config.ts",
           "src/index.ts",
           includeTests ? "src/index.test.ts" : undefined,
@@ -213,8 +254,147 @@ Notes
           "Summary:",
           `- Package: ${pk} at ${folder}`,
           `- Test script: ${testScript}`,
-          "- Scripts: build, dev, test, lint, lint:fix, typecheck, clean",
+          `- Built package: ${isBuilt ? "yes" : "no"}`,
+          `- Scripts: ${scriptEntries
+            .map((s) => s.split(":")[0].replaceAll('"', ""))
+            .join(", ")}`,
           `- Files: ${files.join(", ")}`,
+        ];
+        return lines.join("\n");
+      };
+      actions.push(summary);
+
+      return actions;
+    },
+  });
+
+  // Apps generator: clone an existing app as a template (default: apps/workflow)
+  // - Excludes heavy directories (node_modules, .next, .turbo, dist, etc.)
+  // - Renames package.json "name" to the new app name
+  // - Places the new app at apps/<name>
+  plop.setGenerator("repo-app", {
+    description:
+      "Clone an existing app (default: apps/workflow) into apps/<name> as a starting point, excluding heavy dirs",
+    prompts: [
+      {
+        type: "input",
+        name: "name",
+        message: "New app folder name (apps/<name>, kebab-case):",
+        validate: (v: string) =>
+          v && KEBAB_RE.test(v) ? true : "use-kebab-case (a-z0-9-)",
+      },
+      {
+        type: "input",
+        name: "sourcePath",
+        message: "Source template path (relative)",
+        default: "apps/_template",
+        validate: (v: string) => (v && existsSync(v) ? true : "path must exist"),
+      },
+    ],
+    actions: (answers) => {
+      const name = (answers?.name as string).trim();
+      const source = (answers?.sourcePath as string).trim();
+      const dest = join("apps", name);
+
+      const actions: PlopTypes.ActionType[] = [];
+
+      const copyAction: PlopTypes.CustomActionFunction = () => {
+        if (existsSync(dest)) {
+          throw new Error(`Destination already exists: ${dest}`);
+        }
+
+        // Exclusion rules: directories and file patterns to skip
+        const EXCLUDED_DIRS = new Set([
+          "node_modules",
+          ".next",
+          ".turbo",
+          "dist",
+          ".vercel",
+          ".cache",
+          "coverage",
+          ".git",
+        ] as const);
+
+        const EXCLUDED_FILES = new Set([
+          ".DS_Store",
+          "bun.lock",
+          "bun.lockb",
+        ] as const);
+
+        const EXCLUDED_EXTS = new Set([".tsbuildinfo", ".log"] as const);
+
+        // Filter callback for fs.cp; returns true to include, false to exclude
+        const filter = (src: string): boolean => {
+          const rel = relative(source, src);
+          if (!rel) return true; // source root
+
+          const parts = rel.split(sep);
+          for (const p of parts) {
+            if (EXCLUDED_DIRS.has(p)) return false;
+          }
+
+          const base = basename(src);
+          if (EXCLUDED_FILES.has(base)) return false;
+          const ext = extname(base);
+          if (EXCLUDED_EXTS.has(ext as ".tsbuildinfo" | ".log")) return false;
+          return true;
+        };
+
+        cpSync(source, dest, {
+          recursive: true,
+          dereference: false, // preserve symlinks like AGENTS.md -> CLAUDE.md
+          errorOnExist: true,
+          filter,
+        });
+
+        return `Copied template from ${source} to ${dest}`;
+      };
+      actions.push(copyAction);
+
+      // Ensure AGENTS.md is a symlink to CLAUDE.md after copy (in case original wasn't)
+      const ensureAgentsSymlink: PlopTypes.CustomActionFunction = () => {
+        const agentsPath = join(dest, "AGENTS.md");
+        const target = "CLAUDE.md"; // relative within the app folder
+        try {
+          try {
+            const st = lstatSync(agentsPath);
+            if (st) unlinkSync(agentsPath);
+          } catch {}
+          symlinkSync(target, agentsPath);
+          return "AGENTS.md symlink set to ./CLAUDE.md";
+        } catch {
+          try {
+            writeFileSync(agentsPath, "See CLAUDE.md\n");
+            return "AGENTS.md created as file (symlink fallback)";
+          } catch {
+            return "Warning: could not create AGENTS.md link or file";
+          }
+        }
+      };
+      actions.push(ensureAgentsSymlink);
+
+      const renamePkgAction: PlopTypes.CustomActionFunction = () => {
+        const pkgPath = join(dest, "package.json");
+        try {
+          const raw = readFileSync(pkgPath, "utf8");
+          const data = JSON.parse(raw) as { name?: string } & Record<string, unknown>;
+          data.name = name;
+          writeFileSync(pkgPath, `${JSON.stringify(data, null, 2)}\n`);
+          return `Updated package.json name -> ${name}`;
+        } catch {
+          // If anything goes wrong, it's not fatal for copying; provide guidance
+          return `Warning: could not modify ${pkgPath}; please set name to \"${name}\" manually.`;
+        }
+      };
+      actions.push(renamePkgAction);
+
+      const summary: PlopTypes.CustomActionFunction = () => {
+        const lines = [
+          "Summary:",
+          `- App created at: ${dest}`,
+          `- Source: ${source}`,
+          "- Excluded: node_modules, .next, .turbo, dist, .vercel, .cache, coverage, .git, *.tsbuildinfo, *.log, bun.lock*",
+          "- Remember to run: bun install (at repo root)",
         ];
         return lines.join("\n");
       };

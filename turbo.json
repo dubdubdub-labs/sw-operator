@@ -30,6 +30,13 @@
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "db:push-schema": {
+      "dependsOn": ["^db:push-schema"],
+      "env": ["NEXT_PUBLIC_INSTANT_APP_ID", "INSTANT_APP_ADMIN_TOKEN"]
+    },
+    "db:push-perms": {
+      "dependsOn": ["^db:push-perms"]
     }
   }
 }

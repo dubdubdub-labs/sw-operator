@@ -8,39 +8,94 @@ This is a Turborepo monorepo with the following structure:
 
 `turbo` is installed globally.
 
+The project is pre-scaffolded with packages to co-locate similar functionality, alongside their documentation in AGENTS.md files. We should be mindful to make sure that we're placing coding into the correct package structure. 
+
+Notably: 
+- `instantdb/*` - for InstantDB schema, hooks, and helpers
+- `logger` - for unified logging
+
+
+## Running Commands and Debugging
+If you see an error when starting the dev server about ports in use, you'll have to kill BOTH ports 3000 and 3684 (even though they may only error one at a time).
+
+You should opt to use the InstantDB + Playwright MCP to debug and test when possible, before returning to the user. Remember to lint + typecheck as well.
+
 ## Monorepo Package Guidelines
 
 ### Package Structure
-Every package should follow this structure:
+Every package should follow this structure (groupPath is optional for nesting):
 ```
-packages/[package-name]/
+packages/[groupPath/]<package-name>/
 ├── src/                # Source files
-├── dist/               # Build output (gitignored)
+├── dist/               # Build output (built packages; gitignored)
 ├── package.json        # Package manifest
 ├── tsconfig.json       # TypeScript config
-├── CLAUDE.md          # Package-specific docs
-├── AGENTS.md          # Symlinked to CLAUDE.md
-└── vitest.config.ts   # Test config (if tests exist)
+├── CLAUDE.md           # Package-specific docs
+├── AGENTS.md           # Symlinked to CLAUDE.md
+└── vitest.config.ts    # Test config (if tests exist)
 ```
 
-### Package Generation 
+### Package Generation
 
-You should almost ALWAYS use the `turbo gen` command to scaffold a new package, which comes with nice "out of the box" defaults for our monorepo. 
+Use the `turbo gen` command to scaffold new packages under `packages/` (supports nested paths).
 
+Command
 ```bash
-turbo gen repo-package --args <package-name> <packages | apps> <yes | no> <standard | pass>
+turbo gen repo-package --args <name> <groupPath|''> <built|yes|no> <yes|no> <standard|pass>
 ```
-This commands includes package name (without @repo/ prefix), target (packages or apps), whether to include a sample test file, and whether to use `vitest` or `vitest --passWithNoTests` for the "test" script in package.json.
 
+Arguments
+- name: package id in kebab-case, no `@repo/` prefix.
+- groupPath: optional nested path under `packages/` (e.g., `instantdb` or `platform/utils`).
+- built|yes|no: whether the package is built to `dist/` (yes) or exports TS directly from `src/` (no).
+- yes|no: include a sample test file.
+- standard|pass: `vitest` or `vitest --passWithNoTests` for the test script.
 
-This will scaffold: 
-- package.json, with @repo/package-name, type module, build / dev / test / lint / typecheck / clean scripts, type: module, exports: { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } }, and catalog dependencies
+Examples
+- `turbo gen repo-package --args db instantdb yes yes standard` → built package at `packages/instantdb/db`, name `@repo/instantdb-db`.
+- `turbo gen repo-package --args gateway ai-runtime no yes standard` → source-export package at `packages/ai-runtime/gateway`, name `@repo/ai-runtime-gateway`.
+
+This scaffolds:
+- package.json (ESM). Name is `@repo/<group-dashed>-<name>`.
+  - Built package: `exports` point to `dist/` with `types` and `import`. Scripts include `build`, `dev`, `test`, `lint`, `lint:fix`, `lint:fix:unsafe`, `typecheck`, `clean`.
+  - Source-export package: `exports` point to `src/index.ts`. Scripts include `test`, `lint`, `lint:fix`, `lint:fix:unsafe`, `typecheck`, `clean`.
 - tsconfig.json
-- tsconfig.build.json
+- tsconfig.build.json (only for built packages)
 - vitest.config.ts
-- src/index.ts
-- src/index.test.ts
-- CLAUDE.md (+ symlink to AGENTS.md) -- do NOT forget to fill these out!
+- src/index.ts (+ src/index.test.ts if tests enabled)
+- CLAUDE.md (+ AGENTS.md symlink) — keep this updated as the public API evolves
+
+Note
+- Workspaces include `packages/**`, so nested packages at any depth under `packages/` are discovered automatically.
+
+### App Template and Generation
+
+Use the `repo-app` generator to create a new app from the golden template located at `apps/_template`.
+
+Command
+```bash
+turbo gen repo-app --args <name> [source]
+```
+
+Arguments
+- `name`: the new app folder name under `apps/` (kebab-case).
+- `source`: template path (relative). You should default to `apps/_template`.
+
+Examples
+- `turbo gen repo-app --args sales-crm apps/_template` → creates `apps/sales-crm` from `apps/_template`.
+- `turbo gen repo-app --args search-clone apps/search-demo` → clones from a different source.
+
+Behavior
+- Excludes heavy folders and files when copying: `node_modules`, `.next`, `.turbo`, `dist`, `.vercel`, `.cache`, `coverage`, `.git`, `*.tsbuildinfo`, `*.log`, `bun.lock*`.
+- Ensures `AGENTS.md` in the new app is a symlink to `CLAUDE.md`.
+- Updates the new app's `package.json` `name` field to the provided app name.
+
+After Generation
+- Install dependencies at the repo root if needed: `bun install`.
+- Run the app: `turbo dev --filter=<name>`.
+
+Improving the Golden Template
+- Update `apps/_template` directly; future apps generated via `repo-app` will include your changes.
 
 ### Dependencies
 - Use `catalog:` for shared dependencies from root package.json catalog
